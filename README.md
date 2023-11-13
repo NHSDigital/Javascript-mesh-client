@@ -3,16 +3,7 @@
 [![CI/CD Pull Request](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml/badge.svg)](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=repository-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=repository-template)
 
-Start with an overview or a brief description of what the project is about and what it does. For example -
-
-Welcome to our repository template designed to streamline your project setup! This robust template provides a reliable starting point for your new projects, covering an essential tech stack and encouraging best practices in documenting.
-
-This repository template aims to foster a user-friendly development environment by ensuring that every included file is concise and adequately self-documented. By adhering to this standard, we can promote increased clarity and maintainability throughout your project's lifecycle. Bundled within this template are resources that pave the way for seamless repository creation. Currently supported technologies are:
-
-- Terraform
-- Docker
-
-Make use of this repository template to expedite your project setup and enhance your productivity right from the get-go. Enjoy the advantage of having a well-structured, self-documented project that reduces overhead and increases focus on what truly matters - coding!
+Welcome to the Galleri MESH client. This repository houses a Javascript MESH client which is used by the Galleri project to communicate with [MESH](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh), however it is intended to be universal so any teams that want to use javascript to talk to mesh could utilize this client
 
 ## Table of Contents
 
@@ -32,14 +23,63 @@ Make use of this repository template to expedite your project setup and enhance 
 
 ## Setup
 
-By including preferably a one-liner or if necessary a set of clear CLI instructions we improve user experience. This should be a frictionless installation process that works on various operating systems (macOS, Linux, Windows WSL) and handles all the dependencies.
+This client is compatible with the sandbox, integration and production MESH systems. To use it follow these instructions:
 
-Clone the repository
+1. Clone the repository
 
 ```shell
 git clone https://github.com/nhs-england-tools/repository-template.git
-cd nhs-england-tools/repository-template
 ```
+
+2. Set environmental variables required, the list of environmental vars you need are:
+
+```shell
+# Required variables
+
+# enables or disabled TLS, this should be set to `false` for the sandbox or `true` for integration and production
+MESH_SSL_ENABLED=false
+
+# The ID of the mailbox that you want to send messages from, default is the mesh-sandbox id
+export MESH_SENDER_MAILBOX_ID="X26ABC1"
+
+# The Password of the mailbox that you want to send messages to, default is the mesh-sandbox password
+export MESH_SENDER_MAILBOX_PASSWORD="password"
+
+# The ID of the mailbox that you want to send messages from, default is the mesh-sandbox id
+export MESH_RECEIVER_MAILBOX_ID="X26ABC2"
+
+# The Password of the mailbox that you want to send messages to, default is the mesh-sandbox password
+export MESH_RECEIVER_MAILBOX_PASSWORD="password"
+
+# The location of the certificate used by the sending mailbox, only required for integration and production.
+MESH_SENDER_CERT_LOCATION="/cert/location/here"
+
+# The location of the key used with the certificate above, only required for integration and production.
+MESH_SENDER_KEY_LOCATION="/cert/location/here"
+
+# The location of the certificate used by the receiving mailbox, only required for integration and production.
+MESH_RECEIVER_CERT_LOCATION="/cert/location/here"
+
+# The location of the key used with the certificate above, only required for integration and production.
+MESH_RECEIVER_KEY_LOCATION="/cert/location/here"
+
+# The location of the CA cert which is required for integration and production MESH systems.
+MESH_SENDER_CA_LOCATION="/cert/location/here"
+
+# Set the log level you want to see, for testing the recommended setting is `DEBUG` but there are also `ERROR` and `INFO` levels
+LOG_LEVEL="DEBUG"
+
+# The message content that will be delivered
+MESH_MESSAGE="This is a test"
+```
+
+3. cd into the repository
+
+```shell
+cd galleri-mesh-client
+```
+
+4. run the integrated test by running `npm test` to verify that everything is working.
 
 ### Prerequisites
 
@@ -75,7 +115,7 @@ After a successful installation, provide an informative example of how this proj
 
 ### Testing
 
-There are `make` tasks for you to configure to run your tests.  Run `make test` to see how they work.  You should be able to use the same entry points for local development as in your CI pipeline.
+There are `make` tasks for you to configure to run your tests. Run `make test` to see how they work. You should be able to use the same entry points for local development as in your CI pipeline.
 
 ## Design
 
