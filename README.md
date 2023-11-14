@@ -36,8 +36,8 @@ git clone https://github.com/nhs-england-tools/repository-template.git
 ```shell
 # Required variables
 
-# enables or disabled TLS, this should be set to `false` for the sandbox or `true` for integration and production
-MESH_SSL_ENABLED=false
+# enables or disabled sandbox mode, this should be set to `true` for the sandbox or `false` for integration environments
+export MESH_SANDBOX=true
 
 # The ID of the mailbox that you want to send messages from, default is the mesh-sandbox id
 export MESH_SENDER_MAILBOX_ID="X26ABC1"
@@ -45,10 +45,10 @@ export MESH_SENDER_MAILBOX_ID="X26ABC1"
 # The Password of the mailbox that you want to send messages to, default is the mesh-sandbox password
 export MESH_SENDER_MAILBOX_PASSWORD="password"
 
-# The ID of the mailbox that you want to send messages from, default is the mesh-sandbox id
+# The ID of the mailbox that you want to receive messages from, default is the mesh-sandbox id
 export MESH_RECEIVER_MAILBOX_ID="X26ABC2"
 
-# The Password of the mailbox that you want to send messages to, default is the mesh-sandbox password
+# The Password of the mailbox that you want to receive messages to, default is the mesh-sandbox password
 export MESH_RECEIVER_MAILBOX_PASSWORD="password"
 
 # The location of the certificate used by the sending mailbox, only required for integration and production.

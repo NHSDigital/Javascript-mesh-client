@@ -8,21 +8,20 @@ import markAsRead from "./src/put/mark_as_read.js";
 import sendMessage from "./src/post/send_message.js";
 import sendMessageChunks from "./src/post/send_message_chunks.js";
 
-// defaults to the local url for the sandbox environment
+// defaults to the local url for the sandbox environment, defaults for sandbox
 let url = process.env.MESH_URL || "https://localhost:8700";
 
-// This is the shared key for all mailboxes within an account
-let sharedKey = process.env.MESH_SHARED_KEY;
+// This is the shared key for all mailboxes within an account, defaults for sandbox
+let sharedKey = process.env.MESH_SHARED_KEY || "TestKey";
 
-// This should be disabled for sandbox use, but enabled for integration and prod
-let sandbox = process.env.MESH_SANDBOX;
-
-console.log(sandbox);
-
+// This should be "true" for sandbox use, but "false" for integration and prod.
+// must be a string not bool, cant pass bools in as environmental vars
+let sandbox = process.env.MESH_SANDBOX || "true";
 let senderAgent;
 let receiverAgent;
 
 if (sandbox === "true") {
+  log.info("Running in sandbox mode");
   // just setup to ignore self-signed certs
   senderAgent = new Agent({
     rejectUnauthorized: false,
@@ -32,6 +31,7 @@ if (sandbox === "true") {
     rejectUnauthorized: false,
   });
 } else {
+  log.info("Running in integration mode");
   // Setup the https agents for integration, you can ignore this for sandbox
   senderAgent = new Agent({
     cert: readFileSync(process.env.MESH_SENDER_CERT_LOCATION),
@@ -45,19 +45,21 @@ if (sandbox === "true") {
   });
 }
 
-let logLevel = process.env.LOG_LEVEL || "SILENT";
+let logLevel = process.env.LOG_LEVEL || "INFO";
 log.setLevel(log.levels[logLevel]);
 
-// The 'sender' is the mailbox we will be sending the message from
-let senderMailboxID = process.env.MESH_SENDER_MAILBOX_ID;
-let senderMailboxPassword = process.env.MESH_SENDER_MAILBOX_PASSWORD;
+// The 'sender' is the mailbox we will be sending the message from, defaults to sandbox
+let senderMailboxID = process.env.MESH_SENDER_MAILBOX_ID || "X26ABC1";
+let senderMailboxPassword =
+  process.env.MESH_SENDER_MAILBOX_PASSWORD || "password";
 
 let messageContent = process.env.MESH_MESSAGE || "This is a test";
 let messageFile =
   process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
-// The 'receiver' is the mailbox we will be checking for new message
-let receiverMailboxID = process.env.MESH_RECEIVER_MAILBOX_ID;
-let receiverMailboxPassword = process.env.MESH_RECEIVER_MAILBOX_PASSWORD;
+// The 'receiver' is the mailbox we will be checking for new message, defaults to sandbox
+let receiverMailboxID = process.env.MESH_RECEIVER_MAILBOX_ID || "X26ABC2";
+let receiverMailboxPassword =
+  process.env.MESH_RECEIVER_MAILBOX_PASSWORD || "password";
 
 // A 30 second wait timer to allow the messages to be received and processed by mesh
 async function waitThirtySeconds() {
