@@ -37,9 +37,9 @@ async function markAsRead(
       );
       process.exit(1);
     }
-  } catch {
-    console.error(response.error);
-    exit(1);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
   }
 }
 

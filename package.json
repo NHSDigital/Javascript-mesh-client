@@ -26,8 +26,10 @@
   },
   "homepage": "https://github.com/NHSDigital/Galleri-mesh-client#readme",
   "dependencies": {
+    "archiver": "^6.0.1",
     "axios": "^1.6.1",
     "loglevel": "^1.8.1",
+    "util": "^0.12.5",
     "uuid": "^9.0.1"
   }
 }

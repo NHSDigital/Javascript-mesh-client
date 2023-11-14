@@ -34,9 +34,9 @@ async function getMessageCount(
       );
       process.exit(1);
     }
-  } catch {
+  } catch (error) {
     console.error(error);
-    exit(1);
+    process.exit(1);
   }
 }
 

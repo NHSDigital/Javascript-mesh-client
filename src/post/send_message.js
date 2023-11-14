@@ -1,52 +1,6 @@
 import axios from "axios";
 import log from "loglevel";
-import crypto from "crypto";
-import { v4 as uuid } from "uuid";
-
-// Generates the token, this will be generated fresh for each call, as required by MESH
-async function generateToken(
-  mailbox_id,
-  password,
-  nonce = uuid(),
-  nonce_count = 0
-) {
-  //   Make sure the mesh shared key is set as an environmental var
-  const mesh_shared_key = process.env.MESH_SHARED_KEY;
-
-  // Make sure to leave a space at the end of the schema.
-  const auth_schema_name = "NHSMESH ";
-  const timestamp = new Date()
-    .toISOString()
-    .replace(/[-:.TZ]/g, "")
-    .slice(0, 12);
-  const hmac_msg = `${mailbox_id}:${nonce}:${nonce_count}:${password}:${timestamp}`;
-
-  const hmac = crypto
-    .createHmac("sha256", mesh_shared_key)
-    .update(hmac_msg)
-    .digest("hex");
-
-  return `${auth_schema_name}${mailbox_id}:${nonce}:${nonce_count}:${timestamp}:${hmac}`;
-}
-
-async function generateHeaders(mailbox_id, mailbox_password, mailbox_target) {
-  const token = await generateToken(mailbox_id, mailbox_password);
-  const header = {
-    accept: "application/vnd.mesh.v2+json",
-    authorization: token,
-    "content-type": "application/octet-stream",
-    "mex-clientversion": "ApiDocs==0.0.1",
-    "mex-from": mailbox_id,
-    "mex-to": mailbox_target,
-    "mex-workflowid": "API-DOCS-TEST",
-    "mex-filename": "None",
-    "mex-osarchitecture": "x86_64",
-    "mex-osname": "Linux",
-    "mex-osversion": "#44~18.04.2-Ubuntu",
-    "Content-Type": "application/json",
-  };
-  return header;
-}
+import generateHeaders from "./generate_headers.js";
 
 async function sendMessage(
   url,
@@ -80,9 +34,9 @@ async function sendMessage(
       );
       process.exit(1);
     }
-  } catch {
+  } catch (error) {
     console.error(error);
-    exit(1);
+    process.exit(1);
   }
 }
 
