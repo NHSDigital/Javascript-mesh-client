@@ -7,6 +7,18 @@ import readMessage from "./src/get/read_message.js";
 import markAsRead from "./src/put/mark_as_read.js";
 import sendMessage from "./src/post/send_message.js";
 import sendMessageChunks from "./src/post/send_message_chunks.js";
+import dotenv from "dotenv";
+
+async function loadConfig() {
+  const result = dotenv.config();
+  if (result.error) {
+    throw result.error;
+  }
+
+  console.log("Environment variables loaded");
+}
+
+await loadConfig();
 
 let logLevel = process.env.LOG_LEVEL || "DEBUG";
 log.setLevel(log.levels[logLevel]);
@@ -20,6 +32,7 @@ let sharedKey = process.env.MESH_SHARED_KEY || "TestKey";
 // This should be "true" for sandbox use, but "false" for integration and prod.
 // must be a string not bool, cant pass bools in as environmental vars
 let sandbox = process.env.MESH_SANDBOX || "true";
+
 let senderAgent;
 let receiverAgent;
 if (sandbox === "true") {
