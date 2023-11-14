@@ -6,16 +6,18 @@ async function sendMessage({
   url,
   mailboxID,
   mailboxPassword,
+  sharedKey,
   message,
   mailboxTarget,
   agent,
 }) {
   const fullUrl = `${url}/messageexchange/${mailboxID}/outbox`;
-  const headers = await generateHeaders(
-    mailboxID,
-    mailboxPassword,
-    mailboxTarget
-  );
+  const headers = await generateHeaders({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    mailboxTarget: mailboxTarget,
+    sharedKey: sharedKey,
+  });
 
   let config = { headers: headers };
   // attach agent to headers

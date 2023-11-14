@@ -20,7 +20,11 @@ async function readMessage({
   }
   let chunkedMessage = "";
   let fullUrl = `${url}/messageexchange/${mailboxID}/inbox/${messageID}`;
-  let headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
+  let headers = await generateHeaders({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    sharedKey: sharedKey,
+  });
 
   let config = { headers: headers };
   // attach agent to headers
@@ -41,11 +45,11 @@ async function readMessage({
         let [currentChunk, totalChunks] = chunkRange.split(":").map(Number);
         log.debug(`chunk ${currentChunk} of ${totalChunks} downloaded`);
         if (currentChunk < totalChunks) {
-          let headers = await generateHeaders(
-            mailboxID,
-            mailboxPassword,
-            sharedKey
-          );
+          let headers = await generateHeaders({
+            mailboxID: mailboxID,
+            mailboxPassword: mailboxPassword,
+            sharedKey: sharedKey,
+          });
 
           let config = { headers: headers };
           // attach agent to headers

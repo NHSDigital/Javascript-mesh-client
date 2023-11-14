@@ -10,7 +10,11 @@ async function getMessageCount({
   agent,
 }) {
   let fullUrl = `${url}/messageexchange/${mailboxID}/inbox`;
-  let headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
+  let headers = await generateHeaders({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    sharedKey: sharedKey,
+  });
 
   let config = { headers: headers };
   // attach agent to headers

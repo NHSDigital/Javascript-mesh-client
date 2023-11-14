@@ -80,6 +80,7 @@ async function sendMessageChunks({
   mailboxID,
   mailboxPassword,
   mailboxTarget,
+  sharedKey,
   messageFile,
   agent,
 }) {
@@ -105,11 +106,12 @@ async function sendMessageChunks({
       fullUrl = `${url}/messageexchange/${mailboxID}/outbox`;
     }
 
-    let headers = await generateHeaders(
-      mailboxID,
-      mailboxPassword,
-      mailboxTarget
-    );
+    let headers = await generateHeaders({
+      mailboxID: mailboxID,
+      mailboxPassword: mailboxPassword,
+      mailboxTarget: mailboxTarget,
+      sharedKey: sharedKey,
+    });
     headers["mex-chunk-range"] = `${chunk}:${fileCount}`;
     headers["content-encoding"] = "gzip";
 

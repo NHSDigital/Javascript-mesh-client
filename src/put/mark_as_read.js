@@ -6,14 +6,18 @@ import generateHeaders from "./generate_headers.js";
 
 async function markAsRead({
   url,
-  mailbox_id,
-  mailbox_password,
-  shared_key,
+  mailboxID,
+  mailboxPassword,
+  sharedKey,
   message,
   agent,
 }) {
-  let full_url = `${url}/messageexchange/${mailbox_id}/inbox/${message}/status/acknowledged`;
-  let headers = await generateHeaders(mailbox_id, mailbox_password, shared_key);
+  let full_url = `${url}/messageexchange/${mailboxID}/inbox/${message}/status/acknowledged`;
+  let headers = await generateHeaders({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    sharedKey: sharedKey,
+  });
 
   let config = { headers: headers };
   // attach agent to headers

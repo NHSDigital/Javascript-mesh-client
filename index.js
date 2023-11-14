@@ -8,6 +8,9 @@ import markAsRead from "./src/put/mark_as_read.js";
 import sendMessage from "./src/post/send_message.js";
 import sendMessageChunks from "./src/post/send_message_chunks.js";
 
+let logLevel = process.env.LOG_LEVEL || "DEBUG";
+log.setLevel(log.levels[logLevel]);
+
 // defaults to the local url for the sandbox environment, defaults for sandbox
 let url = process.env.MESH_URL || "https://localhost:8700";
 
@@ -19,9 +22,8 @@ let sharedKey = process.env.MESH_SHARED_KEY || "TestKey";
 let sandbox = process.env.MESH_SANDBOX || "true";
 let senderAgent;
 let receiverAgent;
-
 if (sandbox === "true") {
-  log.info("Running in sandbox mode");
+  console.log("Running in sandbox mode");
   // just setup to ignore self-signed certs
   senderAgent = new Agent({
     rejectUnauthorized: false,
@@ -31,7 +33,7 @@ if (sandbox === "true") {
     rejectUnauthorized: false,
   });
 } else {
-  log.info("Running in integration mode");
+  console.log("Running in integration mode");
   // Setup the https agents for integration, you can ignore this for sandbox
   senderAgent = new Agent({
     cert: readFileSync(process.env.MESH_SENDER_CERT_LOCATION),
@@ -44,9 +46,6 @@ if (sandbox === "true") {
     rejectUnauthorized: false,
   });
 }
-
-let logLevel = process.env.LOG_LEVEL || "INFO";
-log.setLevel(log.levels[logLevel]);
 
 // The 'sender' is the mailbox we will be sending the message from, defaults to sandbox
 let senderMailboxID = process.env.MESH_SENDER_MAILBOX_ID || "X26ABC1";
@@ -89,6 +88,7 @@ async function createMessages() {
     mailboxPassword: senderMailboxPassword,
     message: messageContent,
     mailboxTarget: receiverMailboxID,
+    sharedKey: sharedKey,
     agent: senderAgent,
   });
   log.debug("New message created with an ID: " + newMessage.data["message_id"]);
@@ -112,6 +112,7 @@ async function createMessageChunks() {
     mailboxPassword: senderMailboxPassword,
     mailboxTarget: receiverMailboxID,
     messageFile: messageFile,
+    sharedKey: sharedKey,
     agent: senderAgent,
   });
 }
@@ -196,9 +197,9 @@ async function receiveMessage() {
       log.debug("clearing the message from the mailbox");
       await markAsRead({
         url: url,
-        mailbox_id: receiverMailboxID,
-        mailbox_password: receiverMailboxPassword,
-        shared_key: sharedKey,
+        mailboxID: receiverMailboxID,
+        mailboxPassword: receiverMailboxPassword,
+        sharedKey: sharedKey,
         message: message,
         agent: receiverAgent,
       });

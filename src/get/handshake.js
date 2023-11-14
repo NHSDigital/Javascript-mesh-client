@@ -9,15 +9,19 @@ async function handShake({
   sharedKey,
   agent,
 }) {
-  const full_url = `${url}/messageexchange/${mailboxID}`;
-  const headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
+  let full_url = `${url}/messageexchange/${mailboxID}`;
+  let headers = await generateHeaders({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    sharedKey: sharedKey,
+  });
 
   let config = { headers: headers };
   // attach agent to headers
   config.httpsAgent = agent;
-  // const response = await axios.get(full_url, config);
+  // let response = await axios.get(full_url, config);
   try {
-    const response = await axios.get(full_url, config);
+    let response = await axios.get(full_url, config);
     if (response.status === 200) {
       log.info(`Handshake successful, status ${response.status}\n`);
       return response;

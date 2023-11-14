@@ -2,22 +2,22 @@ import crypto from "crypto";
 import { v4 as uuid } from "uuid";
 
 // Generates the token, this will be generated fresh for each call, as required by MESH
-async function generateToken(
+async function generateToken({
   mailboxID,
-  password,
+  mailboxPassword,
   sharedKey,
   nonce = uuid(),
-  nonceCount = 0
-) {
+  nonceCount = 0,
+}) {
   // Make sure to leave a space at the end of the schema.
-  const auth_schema_name = "NHSMESH ";
-  const timestamp = new Date()
+  let auth_schema_name = "NHSMESH ";
+  let timestamp = new Date()
     .toISOString()
     .replace(/[-:.TZ]/g, "")
     .slice(0, 12);
-  const hmac_msg = `${mailboxID}:${nonce}:${nonceCount}:${password}:${timestamp}`;
+  let hmac_msg = `${mailboxID}:${nonce}:${nonceCount}:${mailboxPassword}:${timestamp}`;
 
-  const hmac = crypto
+  let hmac = crypto
     .createHmac("sha256", sharedKey)
     .update(hmac_msg)
     .digest("hex");
@@ -25,9 +25,13 @@ async function generateToken(
   return `${auth_schema_name}${mailboxID}:${nonce}:${nonceCount}:${timestamp}:${hmac}`;
 }
 
-async function generateHeaders(mailboxID, mailboxPassword, sharedKey) {
-  const token = await generateToken(mailboxID, mailboxPassword, sharedKey);
-  const header = {
+async function generateHeaders({ mailboxID, mailboxPassword, sharedKey }) {
+  let token = await generateToken({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    sharedKey: sharedKey,
+  });
+  let header = {
     accept: "application/vnd.mesh.v2+json",
     authorization: token,
     "mex-clientversion": "ApiDocs==0.0.1",
