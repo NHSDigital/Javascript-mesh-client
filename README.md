@@ -31,7 +31,15 @@ This client is compatible with the sandbox, integration and production MESH syst
 git clone https://github.com/nhs-england-tools/repository-template.git
 ```
 
-2. Set environmental variables required, the list of environmental vars you need are:
+2. cd into the repo and install the required modules
+  ```shell
+  cd Galleri-mesh-client
+  npm i
+  ```
+
+3. If you are using the sandbox then turn it on and run `npm test` to check everything is working
+ If you are using the integration environment then you will need to set up the following variables to override the defaults for the sandbox environment.
+ You can do this by either updating your `~/.bashrc` for linux or `~/.zshrc` or you can put the values into a `.env` file in the repo, it will be excluded by .gitignore
 
 ```shell
 # Required variables
