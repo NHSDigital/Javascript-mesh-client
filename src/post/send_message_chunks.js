@@ -73,15 +73,14 @@ async function sendMessageChunks({
   mailboxID,
   mailboxPassword,
   mailboxTarget,
+  messageFile,
   tlsEnabled,
   agent,
 }) {
   let fileCount = 0;
   let messageID;
   let fullUrl;
-  await splitAndZipCsv(
-    "/home/acleveland/repo/scripts/csv_to_json/test_data_female.csv"
-  )
+  await splitAndZipCsv(messageFile)
     .then((count) => {
       log.debug("CSV splitting and zipping completed");
       fileCount = count;
@@ -107,7 +106,6 @@ async function sendMessageChunks({
     );
     headers["mex-chunk-range"] = `${chunk}:${fileCount}`;
     headers["content-encoding"] = "gzip";
-    log.debug(headers);
 
     let config = { headers: headers };
     if (tlsEnabled) {
@@ -116,14 +114,13 @@ async function sendMessageChunks({
 
     let chunkedFilePath = `output/chunk_${chunk}.gzip`;
     let fileContent = fs.readFileSync(chunkedFilePath);
-    // log.debug(chunkedFilePath);
 
     let response = await axios.post(fullUrl, fileContent, config);
     try {
       if (response.status === 202) {
         // log.debug(`Create chunk ${chunk} successful: ${response.status}`);
         // log.debug(response);
-        log.info("Chunk created successfully");
+        log.info(`${chunk} Chunk sent successfully`);
         if (messageID) {
         } else {
           messageID = response.data["message_id"];
