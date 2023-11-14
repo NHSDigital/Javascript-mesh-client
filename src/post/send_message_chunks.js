@@ -41,6 +41,13 @@ class CsvChunker extends stream.Transform {
 }
 
 async function splitAndZipCsv(filePath) {
+  let directoryPath = "output";
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+    console.log("Directory created:", directoryPath);
+  } else {
+    console.log("Directory already exists:", directoryPath);
+  }
   let csvChunker = new CsvChunker();
   let count = 0;
 
@@ -74,7 +81,6 @@ async function sendMessageChunks({
   mailboxPassword,
   mailboxTarget,
   messageFile,
-  tlsEnabled,
   agent,
 }) {
   let fileCount = 0;
@@ -108,9 +114,8 @@ async function sendMessageChunks({
     headers["content-encoding"] = "gzip";
 
     let config = { headers: headers };
-    if (tlsEnabled) {
-      config.httpsAgent = agent;
-    }
+    // attach agent to headers
+    config.httpsAgent = agent;
 
     let chunkedFilePath = `output/chunk_${chunk}.gzip`;
     let fileContent = fs.readFileSync(chunkedFilePath);

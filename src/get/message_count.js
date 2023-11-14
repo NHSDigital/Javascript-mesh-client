@@ -1,6 +1,4 @@
 import axios from "axios";
-import { Agent } from "https";
-import { readFileSync } from "fs";
 import log from "loglevel";
 import generateHeaders from "./generate_headers.js";
 
@@ -9,17 +7,15 @@ async function getMessageCount({
   mailboxID,
   mailboxPassword,
   sharedKey,
-  tlsEnabled,
   agent,
 }) {
-  const fullUrl = `${url}/messageexchange/${mailboxID}/inbox`;
-  const headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
+  let fullUrl = `${url}/messageexchange/${mailboxID}/inbox`;
+  let headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
 
   let config = { headers: headers };
-  if (tlsEnabled) {
-    config.httpsAgent = agent;
-  }
-  const response = await axios.get(fullUrl, config);
+  // attach agent to headers
+  config.httpsAgent = agent;
+  let response = await axios.get(fullUrl, config);
   try {
     if (response.status === 200) {
       return response;

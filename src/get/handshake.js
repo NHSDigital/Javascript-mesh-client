@@ -7,18 +7,17 @@ async function handShake({
   mailboxID,
   mailboxPassword,
   sharedKey,
-  tlsEnabled,
   agent,
 }) {
   const full_url = `${url}/messageexchange/${mailboxID}`;
   const headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
 
   let config = { headers: headers };
-  if (tlsEnabled) {
-    config.httpsAgent = agent;
-  }
-  const response = await axios.get(full_url, config);
+  // attach agent to headers
+  config.httpsAgent = agent;
+  // const response = await axios.get(full_url, config);
   try {
+    const response = await axios.get(full_url, config);
     if (response.status === 200) {
       log.info(`Handshake successful, status ${response.status}\n`);
       return response;

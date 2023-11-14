@@ -4,27 +4,21 @@ import { readFileSync } from "fs";
 import log from "loglevel";
 import generateHeaders from "./generate_headers.js";
 
-async function markAsRead(
+async function markAsRead({
   url,
   mailbox_id,
   mailbox_password,
   shared_key,
   message,
-  tls_enabled,
-  agent
-) {
-  const full_url = `${url}/messageexchange/${mailbox_id}/inbox/${message}/status/acknowledged`;
-  const headers = await generateHeaders(
-    mailbox_id,
-    mailbox_password,
-    shared_key
-  );
+  agent,
+}) {
+  let full_url = `${url}/messageexchange/${mailbox_id}/inbox/${message}/status/acknowledged`;
+  let headers = await generateHeaders(mailbox_id, mailbox_password, shared_key);
 
   let config = { headers: headers };
-  if (tls_enabled) {
-    config.httpsAgent = agent;
-  }
-  const response = await axios.put(full_url, { messageId: message }, config);
+  // attach agent to headers
+  config.httpsAgent = agent;
+  let response = await axios.put(full_url, { messageId: message }, config);
   try {
     if (response.status === 200) {
       log.info("message cleared\n");

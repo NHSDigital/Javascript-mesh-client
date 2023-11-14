@@ -8,7 +8,6 @@ async function sendMessage({
   mailboxPassword,
   message,
   mailboxTarget,
-  tlsEnabled,
   agent,
 }) {
   const fullUrl = `${url}/messageexchange/${mailboxID}/outbox`;
@@ -19,9 +18,8 @@ async function sendMessage({
   );
 
   let config = { headers: headers };
-  if (tlsEnabled) {
-    config.httpsAgent = agent;
-  }
+  // attach agent to headers
+  config.httpsAgent = agent;
   const response = await axios.post(fullUrl, { data: message }, config);
   try {
     if (response.status === 202) {

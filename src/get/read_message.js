@@ -1,6 +1,5 @@
 import axios from "axios";
-import { Agent } from "https";
-import { readFileSync, writeFile } from "fs";
+import fs from "fs";
 import log from "loglevel";
 import generateHeaders from "./generate_headers.js";
 
@@ -10,17 +9,22 @@ async function readMessage({
   mailboxPassword,
   sharedKey,
   messageID,
-  tlsEnabled,
   agent,
 }) {
+  let directoryPath = "input";
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath, { recursive: true });
+    log.debug("Directory created:", directoryPath);
+  } else {
+    log.debug("Directory already exists:", directoryPath);
+  }
   let chunkedMessage = "";
   let fullUrl = `${url}/messageexchange/${mailboxID}/inbox/${messageID}`;
   let headers = await generateHeaders(mailboxID, mailboxPassword, sharedKey);
 
   let config = { headers: headers };
-  if (tlsEnabled) {
-    config.httpsAgent = agent;
-  }
+  // attach agent to headers
+  config.httpsAgent = agent;
 
   let response = await axios.get(fullUrl, config);
 
@@ -33,8 +37,8 @@ async function readMessage({
       // If the message is chunked then loop through all the chunks and return the assembled message
       do {
         chunkedMessage += response.data;
-        const chunkRange = response.headers["mex-chunk-range"];
-        const [currentChunk, totalChunks] = chunkRange.split(":").map(Number);
+        let chunkRange = response.headers["mex-chunk-range"];
+        let [currentChunk, totalChunks] = chunkRange.split(":").map(Number);
         log.debug(`chunk ${currentChunk} of ${totalChunks} downloaded`);
         if (currentChunk < totalChunks) {
           let headers = await generateHeaders(
@@ -44,9 +48,8 @@ async function readMessage({
           );
 
           let config = { headers: headers };
-          if (tlsEnabled) {
-            config.httpsAgent = agent;
-          }
+          // attach agent to headers
+          config.httpsAgent = agent;
           // If there are more chunks to fetch, update the URL for the next request
           fullUrl = `${url}/messageexchange/${mailboxID}/inbox/${messageID}/${
             currentChunk + 1

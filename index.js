@@ -15,20 +15,35 @@ let url = process.env.MESH_URL || "https://localhost:8700";
 let sharedKey = process.env.MESH_SHARED_KEY;
 
 // This should be disabled for sandbox use, but enabled for integration and prod
-let tlsEnabled = process.env.MESH_TLS_ENABLED;
+let sandbox = process.env.MESH_SANDBOX;
 
-// Setup the https agents for tls, you can ignore this for sandbox
-let senderAgent = new Agent({
-  cert: readFileSync(process.env.MESH_SENDER_CERT_LOCATION),
-  key: readFileSync(process.env.MESH_SENDER_KEY_LOCATION),
-  rejectUnauthorized: false,
-});
+console.log(sandbox);
 
-let receiverAgent = new Agent({
-  cert: readFileSync(process.env.MESH_RECEIVER_CERT_LOCATION),
-  key: readFileSync(process.env.MESH_RECEIVER_KEY_LOCATION),
-  rejectUnauthorized: false,
-});
+let senderAgent;
+let receiverAgent;
+
+if (sandbox === "true") {
+  // just setup to ignore self-signed certs
+  senderAgent = new Agent({
+    rejectUnauthorized: false,
+  });
+
+  receiverAgent = new Agent({
+    rejectUnauthorized: false,
+  });
+} else {
+  // Setup the https agents for integration, you can ignore this for sandbox
+  senderAgent = new Agent({
+    cert: readFileSync(process.env.MESH_SENDER_CERT_LOCATION),
+    key: readFileSync(process.env.MESH_SENDER_KEY_LOCATION),
+    rejectUnauthorized: false,
+  });
+  receiverAgent = new Agent({
+    cert: readFileSync(process.env.MESH_RECEIVER_CERT_LOCATION),
+    key: readFileSync(process.env.MESH_RECEIVER_KEY_LOCATION),
+    rejectUnauthorized: false,
+  });
+}
 
 let logLevel = process.env.LOG_LEVEL || "SILENT";
 log.setLevel(log.levels[logLevel]);
@@ -61,7 +76,6 @@ async function createMessages() {
     mailboxID: senderMailboxID,
     mailboxPassword: senderMailboxPassword,
     sharedKey: sharedKey,
-    tlsEnabled: tlsEnabled,
     agent: senderAgent,
   });
 
@@ -73,7 +87,6 @@ async function createMessages() {
     mailboxPassword: senderMailboxPassword,
     message: messageContent,
     mailboxTarget: receiverMailboxID,
-    tlsEnabled: tlsEnabled,
     agent: senderAgent,
   });
   log.debug("New message created with an ID: " + newMessage.data["message_id"]);
@@ -88,7 +101,6 @@ async function createMessageChunks() {
     mailboxID: senderMailboxID,
     mailboxPassword: senderMailboxPassword,
     sharedKey: sharedKey,
-    tlsEnabled: tlsEnabled,
     agent: senderAgent,
   });
 
@@ -98,7 +110,6 @@ async function createMessageChunks() {
     mailboxPassword: senderMailboxPassword,
     mailboxTarget: receiverMailboxID,
     messageFile: messageFile,
-    tlsEnabled: tlsEnabled,
     agent: senderAgent,
   });
 }
@@ -111,7 +122,6 @@ async function receiveMessage() {
     mailboxID: receiverMailboxID,
     mailboxPassword: receiverMailboxPassword,
     sharedKey: sharedKey,
-    tlsEnabled: tlsEnabled,
     agent: receiverAgent,
   });
 
@@ -122,7 +132,6 @@ async function receiveMessage() {
     mailboxID: receiverMailboxID,
     mailboxPassword: receiverMailboxPassword,
     sharedKey: sharedKey,
-    tlsEnabled: tlsEnabled,
     agent: receiverAgent,
   });
 
@@ -141,7 +150,6 @@ async function receiveMessage() {
         mailboxPassword: receiverMailboxPassword,
         sharedKey: sharedKey,
         messageID: message,
-        tlsEnabled: tlsEnabled,
         agent: receiverAgent,
       });
       try {
@@ -184,15 +192,14 @@ async function receiveMessage() {
 
       // mark the messages as read
       log.debug("clearing the message from the mailbox");
-      await markAsRead(
-        url,
-        receiverMailboxID,
-        receiverMailboxPassword,
-        sharedKey,
-        message,
-        tlsEnabled,
-        receiverAgent
-      );
+      await markAsRead({
+        url: url,
+        mailbox_id: receiverMailboxID,
+        mailbox_password: receiverMailboxPassword,
+        shared_key: sharedKey,
+        message: message,
+        agent: receiverAgent,
+      });
       try {
       } catch {
         console.error("ERROR: Failure marking message" + message + " as read");
@@ -209,12 +216,3 @@ log.debug("\nwaiting 30 seconds for mesh to process the message");
 await waitThirtySeconds();
 log.debug("\nchecking if the message has arrived");
 await receiveMessage();
-// await sendMessageChunks({
-//   url: url,
-//   mailboxID: senderMailboxID,
-//   mailboxPassword: senderMailboxPassword,
-//   mailboxTarget: receiverMailboxID,
-//   messageFile: messageFile,
-//   tlsEnabled: tlsEnabled,
-//   agent: senderAgent,
-// });
