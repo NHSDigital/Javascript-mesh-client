@@ -1,27 +1,25 @@
-import { waitThirtySeconds } from "./helper.js";
 
 export default class meshService {
-  constructor(loaderService,
+  constructor(loader,
     senderService,
     receiverService) {
-    this.loaderService = loaderService;
+    this.loader = loader;
     this.senderService = senderService;
     this.receiverService = receiverService;
   }
 
-  async #sendMessage() {
-
+  async sendMessage() {
+    console.log('Send message.');
+    this.senderService.sendMessage();
   }
 
-  async #receiveMessage() {
-
+  async sendFile() {
+    console.log('Send file.');
+    this.senderService.createAndSendMessageChunks();
   }
 
-  async test(){
-    console.log('Test...');
-    this.loaderService.log();
-    this.#sendMessage();
-    waitThirtySeconds();
-    this.#receiveMessage();
+  async receiveMessage() {
+    console.log('Receive message.');
+    // this.receiverService.receiveMessage();
   }
 }

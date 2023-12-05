@@ -1,33 +1,41 @@
-import { checkConnection } from "./helper";
+import log from "loglevel";
+import sendMessage from "../post/send_message.js";
+import sendMessageChunks from "../post/send_message_chunks.js";
+import { checkConnection } from "./helper.js";
 
 export default class sendMessageService {
-  constructor(url,
-    mailboxID,
-    mailboxPassword,
-    sharedKey,
-    agent) {
-    this.url = url;
-    this.mailboxID = mailboxID;
-    this.mailboxPassword = mailboxPassword;
-    this.sharedKey = sharedKey;
-    this.agent = agent;
-    message = "";
-    messageFile = "";
-    mailboxTarget = "";
+  constructor(config) {
+    this.url = config.url;
+    this.mailboxID = config.mailboxID;
+    this.mailboxPassword = config.mailboxPassword;
+    this.sharedKey = config.sharedKey;
+    this.agent = config.agent;
+    this.message = "";
+    this.messageFile = "";
+    this.mailboxTarget = "";
+
+    let logLevel = process.env.LOG_LEVEL || "DEBUG";
+    log.setLevel(log.levels[logLevel]);
   }
 
-  setPayload(messageService) {
-    this.message = messageService.message;
-    this.messageFile = messageService.messageFile
+  setPayload(payload) {
+    this.message = payload.messageContent;
+    this.messageFile = payload.messageFile;
   }
 
-  setDestination(receiverService) {
-    this.mailboxTarget = receiverService.mailboxTarget;
+  setDestination(mailboxTarget) {
+    this.mailboxTarget = mailboxTarget;
   }
 
   // Send a message
   async sendMessage() {
-    await checkConnection();
+    await checkConnection(
+      this.url,
+      this.mailboxID,
+      this.mailboxPassword,
+      this.sharedKey,
+      this.agent
+    );
     let newMessage = await sendMessage({
       url: this.url,
       mailboxID: this.mailboxID,
@@ -38,14 +46,20 @@ export default class sendMessageService {
       agent: this.agent,
     });
     log.debug("New message created with an ID: " + newMessage.data["message_id"]);
-    log.debug("Message content is: " + messageContent);
+    log.debug("Message content is: " + this.message);
   }
 
   // Chunk a file
   async createAndSendMessageChunks() {
-    await checkConnection();
+    await checkConnection(
+      this.url,
+      this.mailboxID,
+      this.mailboxPassword,
+      this.sharedKey,
+      this.agent
+    );
     await sendMessageChunks({
-      url: url,
+      url: this.url,
       mailboxID: this.mailboxID,
       mailboxPassword: this.mailboxPassword,
       mailboxTarget: this.mailboxTarget,

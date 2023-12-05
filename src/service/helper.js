@@ -1,13 +1,21 @@
+import log from "loglevel";
+import handShake from "../get/handshake.js";
+
+let logLevel = process.env.LOG_LEVEL || "DEBUG";
+log.setLevel(log.levels[logLevel]);
+
+// A 30 second wait timer to allow the messages to be received and processed by mesh
+// Override this value by passing custom seconds when invoked
 export async function waitThirtySeconds(override) {
   return new Promise((resolve) => {
     if (override === undefined) {
       setTimeout(() => {
         resolve("30 seconds have passed.");
-      }, 30); // 30000 milliseconds = 30 seconds
+      }, 10000); // 30000 milliseconds = 30 seconds
     } else {
       setTimeout(() => {
-        resolve(`${seconds} seconds have passed.`);
-      }, seconds * 1000); // custom milliseconds = override seconds
+        resolve(`${override} seconds have passed.`);
+      }, override * 1000); // custom milliseconds = override seconds
     }
   });
 }
