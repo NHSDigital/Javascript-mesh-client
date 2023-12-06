@@ -23,10 +23,10 @@ const destination = loaderInstance.receiverMailboxID || "X26OT264";
 const sendInstance = new senderService(loaderInstance.senderConfig());
 sendInstance.setPayload(data);
 sendInstance.setDestination(destination);
-console.log(sendInstance);
+// console.log(sendInstance);
 
 // Configure receiver service
-const receiverInstance = new receiverService();
+const receiverInstance = new receiverService(loaderInstance.receiverConfig());
 
 // Create mesh communication service
 const meshInstance = new meshService(loaderInstance, sendInstance, receiverInstance);
@@ -34,6 +34,8 @@ const meshInstance = new meshService(loaderInstance, sendInstance, receiverInsta
 // Send a message/file
 await meshInstance.sendMessage();
 await meshInstance.sendFile();
+// log.debug("\nwaiting 30 seconds for mesh to process the message");
 await waitThirtySeconds();
+// log.debug("\nchecking if the message has arrived");
 // Received a message
 await meshInstance.receiveMessage();

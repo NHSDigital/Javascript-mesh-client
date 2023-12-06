@@ -20,6 +20,13 @@ export default class meshService {
 
   async receiveMessage() {
     console.log('Receive message.');
-    // this.receiverService.receiveMessage();
+    let count = this.receiverService.getMessageCount();
+    console.log(`There are ${count} messages.`);
+    this.receiverService.readMessages();
+  }
+
+  async messageCount() {
+    let count = this.receiverService.getMessageCount();
+    console.log(`There are ${count} messages.`);
   }
 }

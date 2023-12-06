@@ -34,7 +34,7 @@ async function generateHeaders({ mailboxID, mailboxPassword, sharedKey }) {
   const header = {
     accept: "application/vnd.mesh.v2+json",
     authorization: token,
-    "mex-clientversion": "ApiDocs==0.0.1",
+    "mex-clientversion": "ApiDocs==javascript-mesh-client-0.0.1",
     "mex-osarchitecture": "x86_64",
     "mex-osname": "Linux",
     "mex-osversion": "#44~18.04.2-Ubuntu",
