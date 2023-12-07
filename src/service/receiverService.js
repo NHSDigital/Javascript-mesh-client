@@ -50,7 +50,7 @@ export default class receiverService {
           mailboxID: this.mailboxID,
           mailboxPassword: this.mailboxPassword,
           sharedKey: this.sharedKey,
-          message: message,
+          messageID: message,
           agent: this.agent
         })
         try {
