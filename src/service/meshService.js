@@ -1,3 +1,5 @@
+import log from "loglevel";
+import { waitThirtySeconds } from "./helper.js";
 
 export default class meshService {
   constructor(loader,
@@ -6,27 +8,28 @@ export default class meshService {
     this.loader = loader;
     this.senderService = senderService;
     this.receiverService = receiverService;
+
+    let logLevel = process.env.LOG_LEVEL || "DEBUG";
+    log.setLevel(log.levels[logLevel]);
   }
 
   async sendMessage() {
-    console.log('Send message.');
-    this.senderService.sendMessage();
+    await this.senderService.sendMessage();
   }
 
   async sendFile() {
-    console.log('Send file.');
-    this.senderService.createAndSendMessageChunks();
+    await this.senderService.createAndSendMessageChunks();
   }
 
-  async receiveMessage() {
-    console.log('Receive message.');
-    let count = this.receiverService.getMessageCount();
-    console.log(`There are ${count} messages.`);
-    this.receiverService.readMessages();
-  }
-
-  async messageCount() {
-    let count = this.receiverService.getMessageCount();
-    console.log(`There are ${count} messages.`);
+  async receiveMessage(wait) {
+    if(wait === true){
+      log.debug("\nwaiting 30 seconds for mesh to process the message");
+      await waitThirtySeconds();
+      log.debug("\nchecking if the message has arrived");
+      await this.receiverService.readMessages();
+    } else {
+      log.debug("\nchecking if the message has arrived");
+      await this.receiverService.readMessages();
+    }
   }
 }

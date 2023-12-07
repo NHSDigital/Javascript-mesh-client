@@ -2,29 +2,21 @@ import log from "loglevel";
 import sendMessage from "../post/send_message.js";
 import sendMessageChunks from "../post/send_message_chunks.js";
 import { checkConnection } from "./helper.js";
+import payload from "../model/payload.js";
 
 export default class sendMessageService {
-  constructor(config) {
+  constructor(config, payload, destination) {
     this.url = config.url;
     this.mailboxID = config.mailboxID;
     this.mailboxPassword = config.mailboxPassword;
     this.sharedKey = config.sharedKey;
     this.agent = config.agent;
-    this.message = "";
-    this.messageFile = "";
-    this.mailboxTarget = "";
+    this.messageContent = payload.messageContent;
+    this.messageFile = payload.messageFile;
+    this.mailboxTarget = destination;
 
     let logLevel = process.env.LOG_LEVEL || "DEBUG";
     log.setLevel(log.levels[logLevel]);
-  }
-
-  setPayload(payload) {
-    this.message = payload.messageContent;
-    this.messageFile = payload.messageFile;
-  }
-
-  setDestination(mailboxTarget) {
-    this.mailboxTarget = mailboxTarget;
   }
 
   // Send a message
@@ -36,17 +28,18 @@ export default class sendMessageService {
       this.sharedKey,
       this.agent
     );
+    log.debug("\nCreating new message");
     let newMessage = await sendMessage({
       url: this.url,
       mailboxID: this.mailboxID,
       mailboxPassword: this.mailboxPassword,
-      message: this.message,
+      message: this.messageContent,
       mailboxTarget: this.mailboxTarget,
       sharedKey: this.sharedKey,
-      agent: this.agent,
+      agent: this.agent
     });
     log.debug("New message created with an ID: " + newMessage.data["message_id"]);
-    log.debug("Message content is: " + this.message);
+    log.debug("Message content is: " + this.messageContent);
   }
 
   // Chunk a file
@@ -65,7 +58,7 @@ export default class sendMessageService {
       mailboxTarget: this.mailboxTarget,
       messageFile: this.messageFile,
       sharedKey: this.sharedKey,
-      agent: this.agent,
+      agent: this.agent
     });
   }
 }

@@ -130,7 +130,7 @@ async function createMessageChunks() {
   });
 }
 
-async function receiveMessage() {
+export async function receiveMessage() {
   // Check connection to mailbox
   log.debug("\nChecking connection to mailbox with handshake");
   await handShake({
@@ -150,7 +150,6 @@ async function receiveMessage() {
     sharedKey: sharedKey,
     agent: receiverAgent,
   });
-
   // Loop through the message and read them. so they don't interfere with tests
   if (inboxCount.data["approx_inbox_count"] > 0) {
     log.info(

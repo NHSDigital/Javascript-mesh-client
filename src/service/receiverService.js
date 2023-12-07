@@ -1,4 +1,5 @@
 import log from "loglevel";
+import { writeFile } from "fs";
 import getMessageCount from "../get/message_count.js";
 import readMessage from "../get/read_message.js";
 import markAsRead from "../put/mark_as_read.js";
@@ -11,34 +12,9 @@ export default class receiverService {
     this.mailboxPassword = config.mailboxPassword;
     this.sharedKey = config.sharedKey;
     this.agent = config.agent;
-    this.message = "";
-    this.messageFile = "";
-    this.mailboxTarget = "";
 
     let logLevel = process.env.LOG_LEVEL || "DEBUG";
     log.setLevel(log.levels[logLevel]);
-  }
-
-  // Get the message count
-  async getMessageCount() {
-    await checkConnection(
-      this.url,
-      this.mailboxID,
-      this.mailboxPassword,
-      this.sharedKey,
-      this.agent
-    );
-
-    // Get the number of messages in mailbox before we add any new ones.
-    log.debug("\nchecking number of messages in mailbox");
-    let inboxCount = await getMessageCount({
-      url: this.url,
-      mailboxID: this.mailboxID,
-      mailboxPassword: this.mailboxPassword,
-      sharedKey: this.sharedKey,
-      agent: this.agent,
-    });
-    return inboxCount;
   }
 
   async readMessages() {
@@ -57,7 +33,7 @@ export default class receiverService {
       mailboxID: this.mailboxID,
       mailboxPassword: this.mailboxPassword,
       sharedKey: this.sharedKey,
-      agent: this.agent,
+      agent: this.agent
     });
 
     // Loop through the message and read them. so they don't interfere with tests
@@ -74,9 +50,9 @@ export default class receiverService {
           mailboxID: this.mailboxID,
           mailboxPassword: this.mailboxPassword,
           sharedKey: this.sharedKey,
-          messageID: this.message,
-          agent: this.agent,
-        });
+          message: message,
+          agent: this.agent
+        })
         try {
           if (messageResponse.data === "") {
             log.warn("WARNING: No data for message " + message);
@@ -122,10 +98,9 @@ export default class receiverService {
           mailboxID: this.mailboxID,
           mailboxPassword: this.mailboxPassword,
           sharedKey: this.sharedKey,
-          message: this.message,
-          agent: this.agent,
+          message: message,
+          agent: this.agent
         });
-
         try {
         } catch {
           console.error("ERROR: Failure marking message" + message + " as read");
