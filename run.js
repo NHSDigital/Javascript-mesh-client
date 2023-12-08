@@ -9,7 +9,7 @@ import meshService from "./src/service/meshService.js";
 const loaderInstance = new loader(dotenv);
 
 // Create message
-let messageContent = process.env.MESH_MESSAGE || "This is a test";
+let messageContent = process.env.MESH_MESSAGE || "This is a test 243434";
 let messageFile =
   process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
@@ -45,4 +45,4 @@ const meshInstance = new meshService(
 await meshInstance.sendMessage();
 await meshInstance.sendFile();
 // // Received a message
-await meshInstance.receiveMessage(true); // true - wait for message, default 30 seconds
+await meshInstance.receiveMessage(false); // true - wait for message, default 30 seconds for files

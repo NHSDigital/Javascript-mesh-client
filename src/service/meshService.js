@@ -14,10 +14,12 @@ export default class meshService {
   }
 
   async sendMessage() {
+    log.debug("\nsending a message");
     await this.senderService.sendMessage();
   }
 
   async sendFile() {
+    log.debug("\nsending a file");
     await this.senderService.createAndSendMessageChunks();
   }
 
