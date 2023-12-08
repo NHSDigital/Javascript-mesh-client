@@ -46,9 +46,8 @@ describe('mesh service', () => {
   const loaderInstance = new loader(dotenv);
 
   // Create message
-  let messageContent = process.env.MESH_MESSAGE || "This is a test 2";
-  let messageFile =
-    process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
+  let messageContent = "This is a JEST test.";
+  let messageFile = "./tests/testdata-organizations-100000.csv";
 
   // Create payload
   const data = new payload(
@@ -64,12 +63,10 @@ describe('mesh service', () => {
     loaderInstance.senderConfig(),
     data,
     destination);
-  // console.log(sendInstance);
 
   // Configure receiver service
   const receiverInstance = new receiverService(
     loaderInstance.receiverConfig());
-  // // console.log(receiverInstance);
 
   // Create mesh communication service
   const meshInstance = new meshService(
@@ -80,30 +77,20 @@ describe('mesh service', () => {
 
   test('send a message', async () => {
 
-    emptyDirs();
+    emptyDirs(); // Empty input/output dirs
 
-    // await meshInstance.sendMessage();
-    // await meshInstance.receiveMessage(false);
+    // Initialise services
+    await meshInstance.sendMessage();
+    await meshInstance.receiveMessage(false);
 
-    // // console.log(getFilenames("./input"));
-
-    // fs.readFile("./input/*", 'utf8', function (err, data) {
-    //   var dataArray = data.split(/\r?\n/);
-    //   console.log(dataArray);
-    // })
-
-    expect(1 + 2).toBe(3);
+    // Check sent message content is received
+    const __dirname = getFilenames("./input");
+    const message = fs.readFileSync('./input/' + __dirname, 'utf-8');
+    expect(JSON.parse(message).data).toBe(data.messageContent);
   });
 
   // test('send a file', () => {
   //   expect(1 + 2).toBe(3);
   // });
 
-  // test('receive a message', () => {
-  //   expect(1 + 2).toBe(3);
-  // });
-
-  // test('receive a file', () => {
-  //   expect(1 + 2).toBe(3);
-  // });
 });
