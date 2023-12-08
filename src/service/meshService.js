@@ -28,6 +28,7 @@ export default class meshService {
       log.debug("\nwaiting 30 seconds for mesh to process the message");
       await waitThirtySeconds();
       log.debug("\nchecking if the message has arrived");
+      log.warn("\nchecking if messages has arrived is taking longer than usual");
       await this.receiverService.readMessages();
     } else {
       log.debug("\nchecking if the message has arrived");

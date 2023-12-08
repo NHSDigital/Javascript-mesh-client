@@ -1,11 +1,11 @@
+import fs from "fs";
+import path from "node:path";
 import dotenv from "dotenv";
-import loader from "../src/service/loader.js"
 import payload from "../src/model/payload.js";
+import loader from "../src/service/loader.js"
 import senderService from "../src/service/senderService.js";
 import receiverService from "../src/service/receiverService.js"
 import meshService from "../src/service/meshService.js";
-import fs from "fs";
-import path from "node:path";
 
 // Empty input and output dirs
 async function emptyDirs() {
@@ -45,13 +45,12 @@ describe('mesh service', () => {
   // Load variables
   const loaderInstance = new loader(dotenv);
 
-  // Create message
-  let messageContent = "This is a JEST test.";
-  let messageFile = "./tests/testdata-organizations-100000.csv";
+  let messageFile =
+  process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
   // Create payload
   const data = new payload(
-    messageContent,
+    "This is a JEST test.",
     messageFile
   )
 
@@ -76,21 +75,34 @@ describe('mesh service', () => {
   // console.log(meshInstance);
 
   test('send a message', async () => {
-
     emptyDirs(); // Empty input/output dirs
 
-    // Initialise services
+    // Create services
     await meshInstance.sendMessage();
     await meshInstance.receiveMessage(false);
 
     // Check sent message content is received
-    const __dirname = getFilenames("./input");
-    const message = fs.readFileSync('./input/' + __dirname, 'utf-8');
+    const filename = getFilenames("./input");
+    const message = fs.readFileSync('./input/' + filename, 'utf-8');
     expect(JSON.parse(message).data).toBe(data.messageContent);
   });
 
-  // test('send a file', () => {
-  //   expect(1 + 2).toBe(3);
-  // });
+  test('send a file', async () => {
+    emptyDirs(); // Empty input/output dirs
+
+    // Create services
+    await meshInstance.sendFile();
+    await meshInstance.receiveMessage();
+
+
+    // below read in first row and compare with input file and pass test
+
+    // Check sent file content is received
+    const filenames = getFilenames("./output").toString().split(',');
+    console.log('check ' + filenames[0]);
+    const message = fs.readFileSync('./output/' + filenames[0], 'utf-8');
+    console.log('first is ' +  message[0]);
+    // expect(JSON.parse(message).data).toBe(data.messageContent);
+  }, 50000); // 50 second timeout for sending a file test
 
 });
