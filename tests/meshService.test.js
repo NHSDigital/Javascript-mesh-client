@@ -1,4 +1,5 @@
 import fs from "fs";
+import csvParser from "csv-parser";
 import path from "node:path";
 import dotenv from "dotenv";
 import payload from "../src/model/payload.js";
@@ -46,7 +47,7 @@ describe('mesh service', () => {
   const loaderInstance = new loader(dotenv);
 
   let messageFile =
-  process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
+    process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
   // Create payload
   const data = new payload(
@@ -72,7 +73,6 @@ describe('mesh service', () => {
     loaderInstance,
     sendInstance,
     receiverInstance);
-  // console.log(meshInstance);
 
   test('send a message', async () => {
     emptyDirs(); // Empty input/output dirs
@@ -94,15 +94,53 @@ describe('mesh service', () => {
     await meshInstance.sendFile();
     await meshInstance.receiveMessage();
 
-
-    // below read in first row and compare with input file and pass test
-
     // Check sent file content is received
-    const filenames = getFilenames("./output").toString().split(',');
-    console.log('check ' + filenames[0]);
-    const message = fs.readFileSync('./output/' + filenames[0], 'utf-8');
-    console.log('first is ' +  message[0]);
-    // expect(JSON.parse(message).data).toBe(data.messageContent);
-  }, 50000); // 50 second timeout for sending a file test
+    const filenames = (getFilenames("./output")).toString().split(',');
 
+    const expectedResultChunk1 = {
+      Index: '1',
+      'Organization Id': '8cC6B5992C0309c',
+      Name: 'Acevedo LLC',
+      Website: 'https://www.donovan.com/',
+      Country: 'Holy See (Vatican City State)',
+      Description: 'Multi-channeled bottom-line core',
+      Founded: '2019',
+      Industry: 'Graphic Design / Web Design',
+      'Number of employees': '7070'
+    };
+
+    const expectedResultChunk2 = {
+      '743': 'CafDEA20374C6aB',
+      'stics / Procurement': '74823',
+      _2: 'Leon-Marshall',
+      _3: 'https://barajas.com/',
+      _4: 'Croatia',
+      _5: 'Virtual holistic methodology',
+      _6: '1997',
+      _7: 'Marketing / Advertising / Sales',
+      _8: '5984'
+    };
+
+    const resultChunk1 = [];
+    const resultChunk2 = [];
+
+    fs.createReadStream("./output/" + filenames[0])
+      .pipe(csvParser())
+      .on("data", (data) => {
+        resultChunk1.push(data);
+      })
+      .on("end", () => {
+        expect(resultChunk1[0]).toStrictEqual(expectedResultChunk1);
+      });
+
+    fs.createReadStream("./output/" + filenames[2])
+      .pipe(csvParser())
+      .on("data", (data) => {
+        resultChunk2.push(data);
+      })
+      .on("end", () => {
+        expect(resultChunk2[0]).toStrictEqual(expectedResultChunk2);
+      });
+
+  }, 50000); // 50 second timeout for sending a file test
 });
