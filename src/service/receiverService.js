@@ -91,17 +91,17 @@ export default class receiverService {
           console.error("ERROR: Failure reading message" + message);
         }
 
-        // mark the messages as read
-        log.debug("clearing the message from the mailbox");
-        await markAsRead({
-          url: this.url,
-          mailboxID: this.mailboxID,
-          mailboxPassword: this.mailboxPassword,
-          sharedKey: this.sharedKey,
-          message: message,
-          agent: this.agent
-        });
         try {
+          // mark the messages as read
+          log.debug("clearing the message from the mailbox");
+          await markAsRead({
+            url: this.url,
+            mailboxID: this.mailboxID,
+            mailboxPassword: this.mailboxPassword,
+            sharedKey: this.sharedKey,
+            message: message,
+            agent: this.agent
+          });
         } catch {
           console.error("ERROR: Failure marking message" + message + " as read");
         }

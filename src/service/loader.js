@@ -16,7 +16,7 @@ export default class setup {
     this.url = process.env.MESH_URL || "https://localhost:8700";
     this.sharedKey = process.env.MESH_SHARED_KEY || "TestKey";
     this.sandbox = process.env.MESH_SANDBOX || "true";
-    if (this.sandbox === true) {
+    if (this.sandbox === "true") {
       console.log("Running in sandbox mode");
       // just setup to ignore self-signed certs
       senderAgent = new Agent({
