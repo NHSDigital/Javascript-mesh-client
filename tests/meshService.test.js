@@ -2,11 +2,11 @@ import fs from "fs";
 import csvParser from "csv-parser";
 import dotenv from "dotenv";
 import payload from "../src/model/payload.js";
-import loader from "../src/service/loader.js"
+import loader from "../src/service/loader.js";
 import senderService from "../src/service/senderService.js";
 import receiverService from "../src/service/receiverService.js"
-import meshService from "../src/service/meshService.js";
-import { emptyDir } from "../src/service/helper.js";
+import meshService from "../src/service/MeshService.js";
+import { emptyDir } from "../src/service/Helper.js";
 
 // Empty input and output dirs
 async function emptyDirs() {

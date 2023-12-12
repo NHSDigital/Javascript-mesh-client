@@ -1,7 +1,7 @@
 import log from "loglevel";
-import { waitSeconds } from "./helper.js";
+import { waitSeconds } from "./Helper.js";
 
-export default class meshService {
+export default class MeshService {
   constructor(loader,
     senderService,
     receiverService) {

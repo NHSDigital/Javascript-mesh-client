@@ -1,10 +1,10 @@
 import log from "loglevel";
 import sendMessage from "../post/send_message.js";
 import sendMessageChunks from "../post/send_message_chunks.js";
-import { checkConnection } from "./helper.js";
-import payload from "../model/payload.js";
+import { checkConnection } from "./Helper.js";
+import payload from "../model/Payload.js";
 
-export default class sendMessageService {
+export default class SendMessageService {
   constructor(config, payload, destination) {
     this.url = config.url;
     this.mailboxID = config.mailboxID;

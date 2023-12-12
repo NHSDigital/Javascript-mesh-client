@@ -2,7 +2,7 @@ import log from "loglevel";
 import { Agent } from "https";
 import { readFileSync } from "fs";
 
-export default class setup {
+export default class Loader {
   constructor(dotenv) {
     const logLevel = process.env.LOG_LEVEL || "DEBUG";
     log.setLevel(log.levels[logLevel]);

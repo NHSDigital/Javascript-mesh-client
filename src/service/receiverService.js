@@ -3,9 +3,9 @@ import { writeFile } from "fs";
 import getMessageCount from "../get/message_count.js";
 import readMessage from "../get/read_message.js";
 import markAsRead from "../put/mark_as_read.js";
-import { checkConnection } from "./helper.js";
+import { checkConnection } from "./Helper.js";
 
-export default class receiverService {
+export default class ReceiverService {
   constructor(config) {
     this.url = config.url;
     this.mailboxID = config.mailboxID;
