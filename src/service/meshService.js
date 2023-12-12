@@ -23,12 +23,17 @@ export default class meshService {
     await this.senderService.createAndSendMessageChunks();
   }
 
-  async receiveMessage() {
-    const timeout = process.env.MESH_RECEIVE_TIMEOUT;
-    log.debug(`\nwaiting ${timeout} seconds for mesh to process the message`);
-    await waitSeconds(timeout);
-    log.debug("\nchecking if the message has arrived");
-    log.warn("\nchecking if messages has arrived is taking longer than usual");
-    await this.receiverService.readMessages();
+  async receiveMessage(wait) {
+    if (wait === false) {
+      log.debug("\nchecking if the message has arrived");
+      await this.receiverService.readMessages();
+    } else {
+      const timeout = process.env.MESH_RECEIVE_TIMEOUT;
+      log.debug(`\nwaiting ${timeout} seconds for mesh to process the message`);
+      await waitSeconds(timeout);
+      log.debug("\nchecking if the message has arrived");
+      log.warn("\nchecking if messages has arrived is taking longer than usual");
+      await this.receiverService.readMessages();
+    }
   }
 }

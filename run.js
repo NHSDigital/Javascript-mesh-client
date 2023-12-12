@@ -43,4 +43,5 @@ await meshInstance.sendMessage();
 await meshInstance.sendFile();
 // Received a message
 // If timeout set as environmental variable then wait that many seconds
+// Provide false to disable timeout
 await meshInstance.receiveMessage();
