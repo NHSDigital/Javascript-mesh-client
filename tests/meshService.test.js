@@ -61,7 +61,7 @@ describe('mesh service', () => {
 
     // Create services
     await meshInstance.sendMessage();
-    await meshInstance.receiveMessage(false);
+    await meshInstance.receiveMessage();
 
     // Check sent message content is received
     const filename = getFilenames("./input");

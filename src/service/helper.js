@@ -9,7 +9,7 @@ log.setLevel(log.levels[logLevel]);
 // Timeout for receiving a file
 export async function waitSeconds() {
   log.debug("\nChecking connection to mailbox with handshake");
-  const seconds = process.env.MESH_RECEIVE_TIMEOUT || 30000;
+  const seconds = process.env.MESH_RECEIVE_TIMEOUT;
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(`${seconds} seconds have passed.`);

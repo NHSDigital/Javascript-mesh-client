@@ -25,16 +25,10 @@ export default class meshService {
 
   async receiveMessage() {
     const timeout = process.env.MESH_RECEIVE_TIMEOUT;
-    if (timeout > 0) {
-      log.debug(`\nwaiting ${timeout} seconds for mesh to process the message`);
-      await waitSeconds(timeout);
-      log.debug("\nchecking if the message has arrived");
-      log.warn("\nchecking if messages has arrived is taking longer than usual");
-      await this.receiverService.readMessages();
-    } else if (timeout === "") {
-      log.debug("\nno timeout set");
-      log.debug("\nchecking if the message has arrived");
-      await this.receiverService.readMessages();
-    }
+    log.debug(`\nwaiting ${timeout} seconds for mesh to process the message`);
+    await waitSeconds(timeout);
+    log.debug("\nchecking if the message has arrived");
+    log.warn("\nchecking if messages has arrived is taking longer than usual");
+    await this.receiverService.readMessages();
   }
 }
