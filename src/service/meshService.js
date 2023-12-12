@@ -38,10 +38,3 @@ export default class meshService {
     }
   }
 }
-
-// remove comments - done
-// make env consts - done
-// make logs debug level logs - done
-// add description for sandbox id - done
-// pass down to override - done
-// make empty dirs a function - done
