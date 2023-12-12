@@ -4,20 +4,21 @@ import { readFileSync } from "fs";
 
 export default class setup {
   constructor(dotenv) {
-    let logLevel = process.env.LOG_LEVEL || "DEBUG";
+    const logLevel = process.env.LOG_LEVEL || "DEBUG";
     log.setLevel(log.levels[logLevel]);
 
     const result = dotenv.config();
     if (result.error) {
       throw result.error;
     }
-    console.log("Environment variables loaded.");
+    log.debug("Environment variables loaded.");
 
+    // For sandbox environment use hardcoded Strings
     this.url = process.env.MESH_URL || "https://localhost:8700";
     this.sharedKey = process.env.MESH_SHARED_KEY || "TestKey";
     this.sandbox = process.env.MESH_SANDBOX || "true";
     if (this.sandbox === "true") {
-      console.log("Running in sandbox mode");
+      log.debug("Running in sandbox mode");
       // just setup to ignore self-signed certs
       senderAgent = new Agent({
         rejectUnauthorized: false,

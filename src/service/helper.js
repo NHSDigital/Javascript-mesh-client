@@ -1,23 +1,19 @@
 import log from "loglevel";
+import fs from "fs"
+import path from "node:path";
 import handShake from "../get/handshake.js";
 
-let logLevel = process.env.LOG_LEVEL || "DEBUG";
+const logLevel = process.env.LOG_LEVEL || "DEBUG";
 log.setLevel(log.levels[logLevel]);
 
-// A 30 second wait timer to allow the messages to be received and processed by mesh
-// Override this value by passing custom seconds when invoked
-export async function waitThirtySeconds(override) {
+// Timeout for receiving a file
+export async function waitSeconds() {
   log.debug("\nChecking connection to mailbox with handshake");
+  const seconds = process.env.MESH_RECEIVE_TIMEOUT || 30000;
   return new Promise((resolve) => {
-    if (override === undefined) {
-      setTimeout(() => {
-        resolve("30 seconds have passed.");
-      }, 30000); // 30000 milliseconds = 30 seconds
-    } else {
-      setTimeout(() => {
-        resolve(`${override} seconds have passed.`);
-      }, override * 1000); // custom milliseconds = override seconds
-    }
+    setTimeout(() => {
+      resolve(`${seconds} seconds have passed.`);
+    }, seconds * 1000);
   });
 }
 
@@ -30,5 +26,17 @@ export async function checkConnection(url, mailboxID, mailboxPassword, sharedKey
     mailboxPassword: mailboxPassword,
     sharedKey: sharedKey,
     agent: agent
+  });
+}
+
+// Remove all files from a directory
+export async function emptyDir(__dirname) {
+  fs.readdir(__dirname, (err, files) => {
+    if (err) throw err;
+    for (const file of files) {
+      fs.unlink(path.join(__dirname, file), (err) => {
+        if (err) throw err;
+      });
+    }
   });
 }

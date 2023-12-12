@@ -15,7 +15,7 @@ export default class sendMessageService {
     this.messageFile = payload.messageFile;
     this.mailboxTarget = destination;
 
-    let logLevel = process.env.LOG_LEVEL || "DEBUG";
+    const logLevel = process.env.LOG_LEVEL || "DEBUG";
     log.setLevel(log.levels[logLevel]);
   }
 

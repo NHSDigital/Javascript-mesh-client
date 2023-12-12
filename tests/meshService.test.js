@@ -1,35 +1,17 @@
 import fs from "fs";
 import csvParser from "csv-parser";
-import path from "node:path";
 import dotenv from "dotenv";
 import payload from "../src/model/payload.js";
 import loader from "../src/service/loader.js"
 import senderService from "../src/service/senderService.js";
 import receiverService from "../src/service/receiverService.js"
 import meshService from "../src/service/meshService.js";
+import { emptyDir } from "../src/service/helper.js";
 
 // Empty input and output dirs
 async function emptyDirs() {
-  const inputDir = "./input";
-  const outputDir = "./output";
-
-  fs.readdir(inputDir, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlink(path.join(inputDir, file), (err) => {
-        if (err) throw err;
-      });
-    }
-  });
-
-  fs.readdir(outputDir, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlink(path.join(outputDir, file), (err) => {
-        if (err) throw err;
-      });
-    }
-  });
+  await emptyDir("./input")
+  await emptyDir("./output")
 }
 
 // Function to get current filenames
@@ -46,7 +28,7 @@ describe('mesh service', () => {
   // Load variables
   const loaderInstance = new loader(dotenv);
 
-  let messageFile =
+  const messageFile =
     process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
   // Create payload

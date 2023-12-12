@@ -9,8 +9,8 @@ import meshService from "./src/service/meshService.js";
 const loaderInstance = new loader(dotenv);
 
 // Create message
-let messageContent = process.env.MESH_MESSAGE || "This is a test 243434";
-let messageFile =
+const messageContent = process.env.MESH_MESSAGE || "This is a test 243434";
+const messageFile =
   process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
 // Create payload
@@ -27,22 +27,20 @@ const sendInstance = new senderService(
   loaderInstance.senderConfig(),
   data,
   destination);
-// console.log(sendInstance);
 
 // // Configure receiver service
 const receiverInstance = new receiverService(
   loaderInstance.receiverConfig());
-// console.log(receiverInstance);
 
 // // Create mesh communication service
 const meshInstance = new meshService(
   loaderInstance,
   sendInstance,
   receiverInstance);
-// console.log(meshInstance);
 
 // Send a message/file
 await meshInstance.sendMessage();
 await meshInstance.sendFile();
-// // Received a message
-await meshInstance.receiveMessage(false); // true - wait for message, default 30 seconds for files
+// Received a message
+// If timeout set as environmental variable then wait that many seconds
+await meshInstance.receiveMessage();
