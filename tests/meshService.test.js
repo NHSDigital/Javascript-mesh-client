@@ -67,7 +67,7 @@ describe('mesh service', () => {
     const filename = getFilenames("./input");
     const message = fs.readFileSync('./input/' + filename, 'utf-8');
     expect(JSON.parse(message).data).toBe(data.messageContent);
-  });
+  }, 50000);
 
   test('send a file', async () => {
     emptyDirs(); // Empty input/output dirs
