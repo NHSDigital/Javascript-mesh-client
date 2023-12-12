@@ -2,7 +2,6 @@ import log from "loglevel";
 import sendMessage from "../post/send_message.js";
 import sendMessageChunks from "../post/send_message_chunks.js";
 import { checkConnection } from "./Helper.js";
-import payload from "../model/Payload.js";
 
 export default class SendMessageService {
   constructor(config, payload, destination) {
