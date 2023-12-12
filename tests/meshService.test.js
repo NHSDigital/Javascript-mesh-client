@@ -1,11 +1,11 @@
 import fs from "fs";
 import csvParser from "csv-parser";
 import dotenv from "dotenv";
-import payload from "../src/model/payload.js";
-import loader from "../src/service/loader.js";
-import senderService from "../src/service/senderService.js";
-import receiverService from "../src/service/receiverService.js"
-import meshService from "../src/service/MeshService.js";
+import Payload from "../src/model/Payload.js";
+import Loader from "../src/service/loader.js";
+import SenderService from "../src/service/senderService.js";
+import ReceiverService from "../src/service/receiverService.js"
+import MeshService from "../src/service/MeshService.js";
 import { emptyDir } from "../src/service/Helper.js";
 
 // Empty input and output dirs
@@ -26,13 +26,13 @@ function getFilenames(__dirname) {
 describe('mesh service', () => {
 
   // Load variables
-  const loaderInstance = new loader(dotenv);
+  const loaderInstance = new Loader(dotenv);
 
   const messageFile =
     process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
   // Create payload
-  const data = new payload(
+  const data = new Payload(
     "This is a JEST test.",
     messageFile
   )
@@ -41,17 +41,17 @@ describe('mesh service', () => {
   const destination = loaderInstance.receiverMailboxID || "X26OT264";
 
   // Configure sender service
-  const sendInstance = new senderService(
+  const sendInstance = new SenderService(
     loaderInstance.senderConfig(),
     data,
     destination);
 
   // Configure receiver service
-  const receiverInstance = new receiverService(
+  const receiverInstance = new ReceiverService(
     loaderInstance.receiverConfig());
 
   // Create mesh communication service
-  const meshInstance = new meshService(
+  const meshInstance = new MeshService(
     loaderInstance,
     sendInstance,
     receiverInstance);

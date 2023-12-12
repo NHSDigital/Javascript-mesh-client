@@ -91,14 +91,25 @@ export default class ReceiverService {
                 );
                 break;
               case 400:
-                log.error(
-                  `ERROR: an error occurred while trying to write chunk data: 404 Bad Request`
-                );
+                (err) => {
+                  log.error(
+                    `ERROR: an error occurred while trying to write chunk data: ${err}`
+                  );
+                }
                 break;
               case 408:
-                log.error(
-                  `ERROR: an error occurred while trying to write chunk data: 408 Request Timeout`
-                );
+                (err) => {
+                  log.error(
+                    `ERROR: an error occurred while trying to write chunk data: ${err}`
+                  );
+                }
+                break;
+              default:
+                (err) => {
+                  log.error(
+                    `ERROR: an error occurred while trying to write chunk data: ${err}`
+                  );
+                }
                 break;
             }
           }
