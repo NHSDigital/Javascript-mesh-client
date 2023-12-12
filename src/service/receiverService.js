@@ -56,36 +56,51 @@ export default class receiverService {
         try {
           if (messageResponse.data === "") {
             log.warn("WARNING: No data for message " + message);
-          } else if (messageResponse.status === 200) {
-            log.debug("Message ID is: " + message);
-            log.debug(`Writing message to 'input/${message}.csv`);
-            writeFile(
-              `./input/${message}.csv`,
-              JSON.stringify(messageResponse.data, null, 2),
-              "utf8",
-              (err) => {
-                if (err) {
-                  log.error(
-                    `ERROR: an error occurred while trying to write chunk data: ${err}`
-                  );
-                }
-              }
-            );
-          } else if (messageResponse.status === 206) {
-            log.debug("Message ID is: " + message);
-            log.debug(`Writing chunked message to 'input/${message}.csv`);
-            writeFile(
-              `./input/${message}.csv`,
-              JSON.stringify(messageResponse.data, null, 2),
-              "utf8",
-              (err) => {
-                if (err) {
-                  log.error(
-                    `ERROR: an error occurred while trying to write chunk data: ${err}`
-                  );
-                }
-              }
-            );
+          } else {
+            switch (messageResponse.status) {
+              case 200:
+                log.debug("Message ID is: " + message);
+                log.debug(`Writing message to 'input/${message}.csv`);
+                writeFile(
+                  `./input/${message}.csv`,
+                  JSON.stringify(messageResponse.data, null, 2),
+                  "utf8",
+                  (err) => {
+                    if (err) {
+                      log.error(
+                        `ERROR: an error occurred while trying to write chunk data: ${err}`
+                      );
+                    }
+                  }
+                );
+                break;
+              case 206:
+                log.debug("Message ID is: " + message);
+                log.debug(`Writing chunked message to 'input/${message}.csv`);
+                writeFile(
+                  `./input/${message}.csv`,
+                  JSON.stringify(messageResponse.data, null, 2),
+                  "utf8",
+                  (err) => {
+                    if (err) {
+                      log.error(
+                        `ERROR: an error occurred while trying to write chunk data: ${err}`
+                      );
+                    }
+                  }
+                );
+                break;
+              case 400:
+                log.error(
+                  `ERROR: an error occurred while trying to write chunk data: 404 Bad Request`
+                );
+                break;
+              case 408:
+                log.error(
+                  `ERROR: an error occurred while trying to write chunk data: 408 Request Timeout`
+                );
+                break;
+            }
           }
         } catch {
           console.error("ERROR: Failure reading message" + message);
