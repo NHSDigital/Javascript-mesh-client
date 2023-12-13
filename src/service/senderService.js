@@ -3,7 +3,7 @@ import sendMessage from "../post/send_message.js";
 import sendMessageChunks from "../post/send_message_chunks.js";
 import { checkConnection } from "./Helper.js";
 
-export default class SendMessageService {
+export default class SenderService {
   constructor(config, payload, destination) {
     this.url = config.url;
     this.mailboxID = config.mailboxID;

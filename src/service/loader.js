@@ -1,17 +1,25 @@
 import log from "loglevel";
+import dotenv from "dotenv";
 import { Agent } from "https";
 import { readFileSync } from "fs";
 
 export default class Loader {
-  constructor(dotenv) {
+  constructor(config) {
+
     const logLevel = process.env.LOG_LEVEL || "DEBUG";
     log.setLevel(log.levels[logLevel]);
 
-    const result = dotenv.config();
-    if (result.error) {
-      throw result.error;
+    if(config !== undefined){
+      dotenv.populate(process.env, config)
+      log.debug("Custom environment variables loaded.");
+    } else {
+      const result = dotenv.config();
+      if (result.error) {
+        throw result.error;
+      }
+      log.debug("Environment variables loaded.");
     }
-    log.debug("Environment variables loaded.");
+
 
     // For sandbox environment use hardcoded Strings
     this.url = process.env.MESH_URL || "https://localhost:8700";
@@ -63,5 +71,9 @@ export default class Loader {
       sharedKey: this.sharedKey,
       agent: this.receiverAgent
     }
+  }
+
+  state(){
+    return process.env;
   }
 }

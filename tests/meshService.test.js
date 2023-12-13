@@ -1,10 +1,9 @@
 import fs from "fs";
 import csvParser from "csv-parser";
-import dotenv from "dotenv";
 import Payload from "../src/model/Payload.js";
 import Loader from "../src/service/loader.js";
-import SenderService from "../src/service/senderService.js";
-import ReceiverService from "../src/service/receiverService.js"
+import SenderService from "../src/service/SenderService.js";
+import ReceiverService from "../src/service/receiverService.js";
 import MeshService from "../src/service/MeshService.js";
 import { emptyDir } from "../src/service/Helper.js";
 
@@ -24,10 +23,28 @@ function getFilenames(__dirname) {
 }
 
 describe('mesh service', () => {
+  const envVars = {
+    LOG_LEVEL: "DEBUG",
+    MESH_URL: "https://msg.intspineservices.nhs.uk",
+    MESH_SHARED_KEY: "BackBone",
+    MESH_SENDER_MAILBOX_ID: "X26OT265",
+    MESH_SENDER_MAILBOX_PASSWORD: "dqsbOEwKeQ3a",
+    MESH_RECEIVER_MAILBOX_ID: "X26OT264",
+    MESH_RECEIVER_MAILBOX_PASSWORD: "8u4V0N1a2nA5",
+    MESH_DATA_FILE: "./tests/testdata-organizations-100000.csv",
+    MESH_SANDBOX: "false",
+    MESH_CA_LOCATION: "/Users/mandeepsandu/certs/mesh/ca.cert.pem",
+    MESH_SENDER_CERT_LOCATION: "/Users/mandeepsandu/certs/mesh/X26OT265.crt",
+    MESH_SENDER_KEY_LOCATION: "/Users/mandeepsandu/certs/mesh/mesh-key.pem",
+    MESH_RECEIVER_CERT_LOCATION: "/Users/mandeepsandu/certs/mesh/X26OT264.crt",
+    MESH_RECEIVER_KEY_LOCATION: "/Users/mandeepsandu/certs/mesh/mesh-key.pem",
+    MESH_RECEIVE_TIMEOUT: "1"
+  }
 
   // Load variables
-  const loaderInstance = new Loader(dotenv);
-
+  // If no object provided then load from .env
+  const loaderInstance = new Loader(envVars);
+  // console.log('check state ->  ' + JSON.stringify(loaderInstance.state()));
   const messageFile =
     process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 

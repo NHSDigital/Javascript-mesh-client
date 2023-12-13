@@ -1,12 +1,11 @@
-import dotenv from "dotenv";
-import Payload from "./src/model/Payload.js"
+import Payload from "./src/model/Payload.js";
 import Loader from "./src/service/loader.js";
-import SenderService from "./src/service/senderService.js";
-import ReceiverService from "./src/service/receiverService.js"
+import SenderService from "./src/service/SenderService.js";
+import ReceiverService from "./src/service/receiverService.js";
 import MeshService from "./src/service/MeshService.js";
 
 // Load variables
-const loaderInstance = new Loader(dotenv);
+const loaderInstance = new Loader();
 
 // Create message
 const messageContent = process.env.MESH_MESSAGE || "This is a test 243434";
