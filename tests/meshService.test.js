@@ -38,7 +38,7 @@ describe('mesh service', () => {
     MESH_SENDER_KEY_LOCATION: "/Users/mandeepsandu/certs/mesh/mesh-key.pem",
     MESH_RECEIVER_CERT_LOCATION: "/Users/mandeepsandu/certs/mesh/X26OT264.crt",
     MESH_RECEIVER_KEY_LOCATION: "/Users/mandeepsandu/certs/mesh/mesh-key.pem",
-    MESH_RECEIVE_TIMEOUT: "1"
+    MESH_RECEIVE_TIMEOUT: "50"
   }
 
   // Load variables
