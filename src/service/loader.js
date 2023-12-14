@@ -28,11 +28,11 @@ export default class Loader {
     if (this.sandbox === "true") {
       log.debug("Running in sandbox mode");
       // just setup to ignore self-signed certs
-      senderAgent = new Agent({
+      this.senderAgent = new Agent({
         rejectUnauthorized: false,
       });
 
-      receiverAgent = new Agent({
+      this.receiverAgent = new Agent({
         rejectUnauthorized: false,
       });
     } else {
