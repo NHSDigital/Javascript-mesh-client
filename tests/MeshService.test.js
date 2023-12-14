@@ -25,19 +25,14 @@ function getFilenames(__dirname) {
 describe('mesh service', () => {
   const envVars = {
     LOG_LEVEL: "DEBUG",
-    MESH_URL: "https://msg.intspineservices.nhs.uk",
-    MESH_SHARED_KEY: "BackBone",
-    MESH_SENDER_MAILBOX_ID: "X26OT265",
-    MESH_SENDER_MAILBOX_PASSWORD: "dqsbOEwKeQ3a",
-    MESH_RECEIVER_MAILBOX_ID: "X26OT264",
-    MESH_RECEIVER_MAILBOX_PASSWORD: "8u4V0N1a2nA5",
+    MESH_URL: "https://localhost:8700",
+    MESH_SHARED_KEY: "TestKey",
+    MESH_SENDER_MAILBOX_ID: "X26ABC1",
+    MESH_SENDER_MAILBOX_PASSWORD: "password",
+    MESH_RECEIVER_MAILBOX_ID: "X26ABC2",
+    MESH_RECEIVER_MAILBOX_PASSWORD: "password",
     MESH_DATA_FILE: "./tests/testdata-organizations-100000.csv",
-    MESH_SANDBOX: "false",
-    MESH_CA_LOCATION: "/Users/mandeepsandu/certs/mesh/ca.cert.pem",
-    MESH_SENDER_CERT_LOCATION: "/Users/mandeepsandu/certs/mesh/X26OT265.crt",
-    MESH_SENDER_KEY_LOCATION: "/Users/mandeepsandu/certs/mesh/mesh-key.pem",
-    MESH_RECEIVER_CERT_LOCATION: "/Users/mandeepsandu/certs/mesh/X26OT264.crt",
-    MESH_RECEIVER_KEY_LOCATION: "/Users/mandeepsandu/certs/mesh/mesh-key.pem",
+    MESH_SANDBOX: "true",
     MESH_RECEIVE_TIMEOUT: "50"
   }
 
