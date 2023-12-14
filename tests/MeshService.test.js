@@ -3,7 +3,7 @@ import csvParser from "csv-parser";
 import Payload from "../src/model/Payload.js";
 import Loader from "../src/service/Loader.js";
 import SenderService from "../src/service/SenderService.js";
-import ReceiverService from "../src/service/receiverService.js";
+import ReceiverService from "../src/service/ReceiverService.js";
 import MeshService from "../src/service/MeshService.js";
 import { emptyDir } from "../src/service/Helper.js";
 
