@@ -49,8 +49,8 @@ export default class Loader {
     };
     this.senderMailboxID = process.env.MESH_SENDER_MAILBOX_ID || "X26ABC1";
     this.receiverMailboxID = process.env.MESH_RECEIVER_MAILBOX_ID || "X26ABC2";
-    this.senderMailboxPassword = process.env.MESH_SENDER_MAILBOX_PASSWORD || "password";
-    this.receiverMailboxPassword = process.env.MESH_RECEIVER_MAILBOX_PASSWORD || "password";
+    this.senderMailboxPassword = process.env.MESH_SENDER_MAILBOX_ACCESS_ID || "password";
+    this.receiverMailboxPassword = process.env.MESH_RECEIVER_MAILBOX_ACCESS_ID || "password";
   }
 
   senderConfig() {
