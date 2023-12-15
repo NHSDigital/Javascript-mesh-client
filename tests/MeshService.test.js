@@ -28,9 +28,9 @@ describe('mesh service', () => {
     MESH_URL: "https://localhost:8700",
     MESH_SHARED_KEY: "TestKey",
     MESH_SENDER_MAILBOX_ID: "X26ABC1",
-    MESH_SENDER_MAILBOX_ACCESS_ID: "password",
+    MESH_SENDER_MAILBOX_ACCESS_ID: null,
     MESH_RECEIVER_MAILBOX_ID: "X26ABC2",
-    MESH_RECEIVER_MAILBOX_ACCESS_ID: "password",
+    MESH_RECEIVER_MAILBOX_ACCESS_ID: null,
     MESH_DATA_FILE: "./tests/testdata-organizations-100000.csv",
     MESH_SANDBOX: "true",
     MESH_RECEIVE_TIMEOUT: "30"
