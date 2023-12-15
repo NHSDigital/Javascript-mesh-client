@@ -33,7 +33,7 @@ describe('mesh service', () => {
     MESH_RECEIVER_MAILBOX_PASSWORD: "password",
     MESH_DATA_FILE: "./tests/testdata-organizations-100000.csv",
     MESH_SANDBOX: "true",
-    MESH_RECEIVE_TIMEOUT: "50"
+    MESH_RECEIVE_TIMEOUT: "30"
   }
 
   // Load variables
@@ -136,5 +136,5 @@ describe('mesh service', () => {
         expect(resultChunk2[0]).toStrictEqual(expectedResultChunk2);
       });
 
-  }, 50000); // 50 second timeout for sending a file test
+  }, 40000); // 50 second timeout for sending a file test
 });
