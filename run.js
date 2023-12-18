@@ -13,10 +13,7 @@ const messageFile =
   process.env.MESH_DATA_FILE || "./tests/testdata-organizations-100000.csv";
 
 // Create payload
-const data = new Payload(
-  messageContent,
-  messageFile
-)
+const data = new Payload(messageContent, messageFile);
 
 // Get destination Id or provide one
 const destination = loaderInstance.receiverMailboxID || "X26OT264";
@@ -25,17 +22,18 @@ const destination = loaderInstance.receiverMailboxID || "X26OT264";
 const sendInstance = new SenderService(
   loaderInstance.senderConfig(),
   data,
-  destination);
+  destination
+);
 
 // // Configure receiver service
-const receiverInstance = new ReceiverService(
-  loaderInstance.receiverConfig());
+const receiverInstance = new ReceiverService(loaderInstance.receiverConfig());
 
 // // Create mesh communication service
 const meshInstance = new MeshService(
   loaderInstance,
   sendInstance,
-  receiverInstance);
+  receiverInstance
+);
 
 // Send a message/file
 await meshInstance.sendMessage();
