@@ -40,7 +40,7 @@ async function generateHeaders({
     accept: "application/vnd.mesh.v2+json",
     authorization: token,
     "content-type": "application/octet-stream",
-    "mex-clientversion": "ApiDocs==0.0.1",
+    "mex-clientversion": "javascript-mesh-client==0.0.1",
     "mex-from": mailboxID,
     "mex-to": mailboxTarget,
     "mex-workflowid": "API-DOCS-TEST",

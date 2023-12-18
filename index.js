@@ -15,7 +15,7 @@ async function loadConfig() {
     throw result.error;
   }
 
-  console.log("Environment variables loaded");
+  debug.log("Environment variables loaded");
 }
 
 await loadConfig();
@@ -36,7 +36,7 @@ let sandbox = process.env.MESH_SANDBOX || "true";
 let senderAgent;
 let receiverAgent;
 if (sandbox === "true") {
-  console.log("Running in sandbox mode");
+  log.debug("Running in sandbox mode");
   // just setup to ignore self-signed certs
   senderAgent = new Agent({
     rejectUnauthorized: false,
@@ -46,7 +46,7 @@ if (sandbox === "true") {
     rejectUnauthorized: false,
   });
 } else {
-  console.log("Running in integration mode");
+  log.debug("Running in integration mode");
   // Setup the https agents for integration, you can ignore this for sandbox
   senderAgent = new Agent({
     cert: readFileSync(process.env.MESH_SENDER_CERT_LOCATION),
@@ -130,7 +130,7 @@ async function createMessageChunks() {
   });
 }
 
-async function receiveMessage() {
+export async function receiveMessage() {
   // Check connection to mailbox
   log.debug("\nChecking connection to mailbox with handshake");
   await handShake({
