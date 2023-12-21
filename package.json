@@ -1,8 +1,8 @@
 {
-  "name": "galleri-mesh-client",
-  "version": "1.0.1",
+  "name": "nhs-mesh-client",
+  "version": "1.0.2",
   "description": "A client to talk to MESH",
-  "main": "index.js",
+  "main": "MeshModuleTemplate.js",
   "type": "module",
   "directories": {
     "doc": "docs",
