@@ -1,6 +1,6 @@
 {
   "name": "galleri-mesh-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A client to talk to MESH",
   "main": "index.js",
   "type": "module",
