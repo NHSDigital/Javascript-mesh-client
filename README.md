@@ -13,6 +13,7 @@ Welcome to the Galleri MESH client. This repository houses a Javascript MESH cli
     - [Prerequisites](#prerequisites)
     - [Configuration](#configuration)
   - [Usage](#usage)
+      - [MESH module services](#mesh-module-services)
     - [Testing](#testing)
   - [Design](#design)
     - [Diagrams](#diagrams)
@@ -113,11 +114,50 @@ make config
 
 ## Usage
 
-After a successful installation, provide an informative example of how this project can be used. Additional code snippets, screenshots and demos work well in this space. You may also link to the other documentation resources, e.g. the [User Guide](./docs/user-guide.md) to demonstrate more use cases and to show more features.
+See MeshService.test.js to see an implementation of the mesh module services configured to send and receive a message/file.
+
+You will need the dotenv package for the following.
+To connect to the sanbox environment the following environmental variables need to be set:
+
+    LOG_LEVEL="DEBUG"
+    MESH_URL="https://localhost:8700"
+    MESH_SHARED_KEY="TestKey"
+    MESH_SENDER_MAILBOX_ID="X26ABC1"
+    MESH_SENDER_MAILBOX_ACCESS_ID=""
+    MESH_RECEIVER_MAILBOX_ID="X26ABC2"
+    MESH_RECEIVER_MAILBOX_ACCESS_ID=""
+    MESH_DATA_FILE="./tests/testdata-organizations-100000.csv"
+    MESH_SANDBOX="true"
+    MESH_RECEIVE_TIMEOUT="30"
+
+Alternatively see meshModuleTemplate.js which contains an example on connecting to your own MESH Mailbox by setting your own environmental variables.
+
+#### MESH module services
+
+The module contains a Loader, SenderService, ReceiverService and MeshService classes that need
+to be configured.
+
+Once dotenv is installed, set your values in your .env file including the message and/or file to transmit. The Loader class will initialise the environmental variables. User loaderInstance.state()
+to debug the values.
+
+The SenderService instance takes loaderInstance.senderConfig() as an argument and sets the
+senderInstance values. You can pass in different loaderInstances to configure multiple senderInstances. A Payload object containing the message and/or file to transmit. A destination which is the receiver mailbox id.
+
+The receiverService instance takes loaderInstance.receiverConfig() as an argument and sets the
+receiverInstance values. You can pass in different loaderInstances to configure multiple receiverInstances.
+
+The MeshServices instance takes as argument a senderInstance and a receiverInstance and creates
+a sender/receiver relationship between the two instances. You can use meshInstance to call
+sendMessage(), sendFile() and receiveMessage(). You can configure multiple meshInstances with
+different sender/receiver instances and allow relationships between different senders and receivers.
+
 
 ### Testing
 
 There are `make` tasks for you to configure to run your tests. Run `make test` to see how they work. You should be able to use the same entry points for local development as in your CI pipeline.
+
+`npm test` will execute meshService.test.js.
+
 
 ## Design
 
