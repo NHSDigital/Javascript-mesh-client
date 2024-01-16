@@ -81,7 +81,7 @@ See MeshService.test.js to see an implementation of the mesh module services con
 You will need the dotenv package for the following.
 To connect to the sanbox environment the following environmental variables need to be set:
 
-```
+```bash
 LOG_LEVEL="DEBUG"
 MESH_URL="https://localhost:8700"
 MESH_SHARED_KEY="TestKey"
