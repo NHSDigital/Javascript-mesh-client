@@ -41,8 +41,10 @@ export async function loadConfig() {
     log.debug("Running in integration mode");
     // Setup the https agents for integration, you can ignore this for sandbox
     senderAgent = new Agent({
-      cert: process.env.MESH_SENDER_CERT,
-      key: process.env.MESH_SENDER_KEY,
+      cert: Buffer.from(process.env.MESH_SENDER_CERT, "base64").toString(
+        "utf8"
+      ),
+      key: Buffer.from(process.env.MESH_SENDER_KEY, "base64").toString("utf8"),
       rejectUnauthorized: false,
     });
     receiverAgent = new Agent({
