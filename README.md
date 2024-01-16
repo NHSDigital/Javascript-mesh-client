@@ -81,20 +81,22 @@ See MeshService.test.js to see an implementation of the mesh module services con
 You will need the dotenv package for the following.
 To connect to the sanbox environment the following environmental variables need to be set:
 
-    LOG_LEVEL="DEBUG"
-    MESH_URL="https://localhost:8700"
-    MESH_SHARED_KEY="TestKey"
-    MESH_SENDER_MAILBOX_ID="X26ABC1"
-    MESH_SENDER_MAILBOX_ACCESS_ID=""
-    MESH_RECEIVER_MAILBOX_ID="X26ABC2"
-    MESH_RECEIVER_MAILBOX_ACCESS_ID=""
-    MESH_DATA_FILE="./tests/testdata-organizations-100000.csv"
-    MESH_SANDBOX="true"
-    MESH_RECEIVE_TIMEOUT="30"
+```
+LOG_LEVEL="DEBUG"
+MESH_URL="https://localhost:8700"
+MESH_SHARED_KEY="TestKey"
+MESH_SENDER_MAILBOX_ID="X26ABC1"
+MESH_SENDER_MAILBOX_ACCESS_ID=""
+MESH_RECEIVER_MAILBOX_ID="X26ABC2"
+MESH_RECEIVER_MAILBOX_ACCESS_ID=""
+MESH_DATA_FILE="./tests/testdata-organizations-100000.csv"
+MESH_SANDBOX="true"
+MESH_RECEIVE_TIMEOUT="30"
+```
 
 Alternatively see meshModuleTemplate.js which contains an example on connecting to your own MESH Mailbox by setting your own environmental variables.
 
-#### MESH module services
+### MESH module services
 
 The module contains a Loader, SenderService, ReceiverService and MeshService classes that need
 to be configured.
@@ -119,7 +121,7 @@ different sender/receiver instances and allow relationships between different se
 
 ## Contacts
 
-Maintainers: andrew.cleveland1@nhs.net
+Maintainers: andrew cleveland
 
 ## Licence
 
