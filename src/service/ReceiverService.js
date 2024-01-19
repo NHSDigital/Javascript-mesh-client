@@ -38,7 +38,7 @@ export default class ReceiverService {
 
     // Loop through the message and read them. so they don't interfere with tests
     if (inboxCount.data["approx_inbox_count"] > 0) {
-      log.info(
+      log.debug(
         "There are " +
           inboxCount.data["approx_inbox_count"] +
           " Messages in the mailbox"
@@ -135,7 +135,7 @@ export default class ReceiverService {
         }
       }
     } else {
-      log.info("There are no messages in the inbox");
+      log.debug("There are no messages in the inbox");
     }
   }
 }

@@ -25,7 +25,7 @@ async function markAsRead({
   let response = await axios.put(full_url, { messageId: message }, config);
   try {
     if (response.status === 200) {
-      log.info("message cleared\n");
+      log.debug("message cleared\n");
       return response;
     } else {
       console.error(

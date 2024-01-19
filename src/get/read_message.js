@@ -11,13 +11,6 @@ async function readMessage({
   messageID,
   agent,
 }) {
-  let directoryPath = "input";
-  if (!fs.existsSync(directoryPath)) {
-    fs.mkdirSync(directoryPath, { recursive: true });
-    log.debug("Directory created:", directoryPath);
-  } else {
-    log.debug("Directory already exists:", directoryPath);
-  }
   let chunkedMessage = "";
   let fullUrl = `${url}/messageexchange/${mailboxID}/inbox/${messageID}`;
   let headers = await generateHeaders({

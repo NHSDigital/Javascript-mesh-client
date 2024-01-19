@@ -19,11 +19,10 @@ async function handShake({
   let config = { headers: headers };
   // attach agent to headers
   config.httpsAgent = agent;
-  // let response = await axios.get(full_url, config);
   try {
     let response = await axios.get(full_url, config);
     if (response.status === 200) {
-      log.info(`Handshake successful, status ${response.status}\n`);
+      log.debug(`Handshake successful, status ${response.status}\n`);
       return response;
     } else {
       console.error(

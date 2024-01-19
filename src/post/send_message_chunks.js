@@ -96,7 +96,7 @@ async function sendMessageChunks({
       console.error("An error occurred:", err);
     });
 
-  log.info(fileCount + " chunks were created");
+  log.debug(fileCount + " chunks were created");
   let axiosResponse;
 
   for (let chunk = 1; chunk <= fileCount; chunk++) {
@@ -127,7 +127,7 @@ async function sendMessageChunks({
       if (response.status === 202) {
         // log.debug(`Create chunk ${chunk} successful: ${response.status}`);
         // log.debug(response);
-        log.info(`${chunk} Chunk sent successfully`);
+        log.debug(`${chunk} Chunk sent successfully`);
         if (messageID) {
         } else {
           messageID = response.data["message_id"];
