@@ -6,7 +6,8 @@ import getMessageCount from "./src/get/message_count.js";
 import readMessage from "./src/get/read_message.js";
 import markAsRead from "./src/put/mark_as_read.js";
 import sendMessage from "./src/post/send_message.js";
-import sendMessageChunks from "./src/post/send_message_chunks.js";
+// import sendMessageChunks from "./src/post/send_message_chunks.js";
+import sendChunkedMessage from "./src/post/send_chunked_message.js";
 import dotenv from "dotenv";
 
 export async function loadConfig({
@@ -23,7 +24,7 @@ export async function loadConfig({
   receiverMailboxID = "X26ABC2",
   receiverMailboxPassword = "password",
   messageContent = "This is a test",
-  messageFile = "./tests/testdata-organizations-100000.csv",
+  messageFile = "node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv",
 }) {
   log.setLevel(log.levels[logLevel]);
 
@@ -76,7 +77,7 @@ export { default as getMessageCount } from "./src/get/message_count.js";
 export { default as readMessage } from "./src/get/read_message.js";
 export { default as markAsRead } from "./src/put/mark_as_read.js";
 export { default as sendMessage } from "./src/post/send_message.js";
-export { default as sendMessageChunks } from "./src/post/send_message_chunks.js";
+export { default as sendChunkedMessage } from "./src/post/send_chunked_message.js";
 
 export async function createMessages() {
   // Check connection to mailbox

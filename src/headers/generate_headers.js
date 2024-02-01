@@ -39,7 +39,6 @@ async function generateHeaders({ mailboxID, mailboxPassword, sharedKey }) {
     "mex-osarchitecture": "x86_64",
     "mex-osname": "Linux",
     "mex-osversion": "#44~18.04.2-Ubuntu",
-    "Content-Type": "application/json",
   };
   return header;
 }
