@@ -6,7 +6,6 @@ import getMessageCount from "./src/get/message_count.js";
 import readMessage from "./src/get/read_message.js";
 import markAsRead from "./src/put/mark_as_read.js";
 import sendMessage from "./src/post/send_message.js";
-// import sendMessageChunks from "./src/post/send_message_chunks.js";
 import sendChunkedMessage from "./src/post/send_chunked_message.js";
 import dotenv from "dotenv";
 

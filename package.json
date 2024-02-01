@@ -1,7 +1,7 @@
 {
   "name": "nhs-mesh-client",
   "version": "1.0.9",
-  "description": "A client to talk to MESH",
+  "description": "A client to talk to NHS MESH",
   "main": "index.js",
   "type": "module",
   "directories": {
@@ -9,11 +9,12 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "e2e": "node examples/conformance.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NHSDigital/Galleri-mesh-client.git"
+    "url": "git+https://github.com/NHSDigital/Javascript-mesh-client.git"
   },
   "keywords": [
     "NHS",
@@ -22,10 +23,11 @@
   "author": "Andrew Cleveland <andrew.cleveland-cic@ibm.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NHSDigital/Galleri-mesh-client/issues"
+    "url": "https://github.com/NHSDigital/Javascript-mesh-client/issues"
   },
-  "homepage": "https://github.com/NHSDigital/Galleri-mesh-client#readme",
+  "homepage": "https://github.com/NHSDigital/Javascript-mesh-client#readme",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.504.0",
     "archiver": "^6.0.1",
     "axios": "^1.6.2",
     "csv-parser": "^3.0.0",
