@@ -2,7 +2,7 @@ import axios from "axios";
 import { Agent } from "https";
 import { readFileSync } from "fs";
 import log from "loglevel";
-import generateHeaders from "./generate_headers.js";
+import generateHeaders from "../headers/generate_headers.js";
 
 async function markAsRead({
   url,
@@ -18,6 +18,7 @@ async function markAsRead({
     mailboxPassword: mailboxPassword,
     sharedKey: sharedKey,
   });
+  headers["content-type"] = "application/octet-stream";
 
   let config = { headers: headers };
   // attach agent to headers
@@ -25,7 +26,7 @@ async function markAsRead({
   let response = await axios.put(full_url, { messageId: message }, config);
   try {
     if (response.status === 200) {
-      log.info("message cleared\n");
+      log.debug("message cleared\n");
       return response;
     } else {
       console.error(
@@ -36,8 +37,22 @@ async function markAsRead({
       process.exit(1);
     }
   } catch (error) {
-    console.error(error);
-    process.exit(1);
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      log.error(
+        `Request failed with status code ${error.response.status}: ${error.response.statusText}`
+      );
+      return error;
+    } else if (error.request) {
+      // The request was made but no response was received
+      log.error("No response was received for the request");
+      return error;
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      log.error("Error:", error.message);
+      return error;
+    }
   }
 }
 
