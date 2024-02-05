@@ -29,7 +29,7 @@
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.504.0",
     "archiver": "^6.0.1",
-    "axios": "^1.6.2",
+    "axios": "^1.6.7",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.3.1",
     "loglevel": "^1.8.1",
