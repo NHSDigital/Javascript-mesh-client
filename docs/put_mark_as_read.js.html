@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: get/handshake.js</title>
+    <title>JSDoc: Source: put/mark_as_read.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: get/handshake.js</h1>
+    <h1 class="page-title">Source: put/mark_as_read.js</h1>
 
     
 
@@ -27,43 +27,58 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import axios from "axios";
-import generateHeaders from "../headers/generate_headers.js";
+import { Agent } from "https";
 import log from "loglevel";
+import generateHeaders from "../headers/generate_headers.js";
 
 /**
- * Performs a handshake operation with a specified URL using the mailbox credentials and shared key.
- * It constructs the full URL, generates necessary headers, and sends a GET request to the server.
- * Logs the outcome and returns the response if successful; otherwise, logs the error.
+ * Marks a specified message as read in the mailbox. It constructs a PUT request to the service endpoint
+ * to update the message status to 'acknowledged'. Generates necessary headers for authentication and authorization.
  *
- * A successful response should have a status of 200, but that needs to be checked at the client side.
- *
- * @param {Object} params - The parameters for the handshake operation.
- * @param {string} params.url - The base URL for the handshake operation.
- * @param {string} params.mailboxID - The mailbox ID used for generating headers.
+ * @param {Object} params - The parameters for the mark as read operation.
+ * @param {string} params.url - The base URL for the message exchange service.
+ * @param {string} params.mailboxID - The mailbox ID used in the URL and for generating headers.
  * @param {string} params.mailboxPassword - The mailbox password used for generating headers.
  * @param {string} params.sharedKey - The shared key used for generating headers.
- * @param {Object} params.agent - The HTTPS agent used for the request (for handling SSL/TLS configurations).
- * @returns {Promise&lt;Object>} - The response from the server if the request is successful; otherwise, an error object.
- * @throws {Error} - Throws an error if the request setup fails before sending or if there are issues with parameters.
+ * @param {string} params.message - The ID of the message to mark as read.
+ * @param {Agent} params.agent - The HTTPS agent for the request, used for its SSL/TLS configurations.
+ * @returns {Promise&lt;Object>} A promise that resolves with the server response if the request is successful.
+ * If the response status is not 200, the process will exit with an error. If an error occurs during the request,
+ * it logs the error and returns the error object.
+ * @throws {Error} If setting up the request or executing it results in an error, an Error object is thrown.
  */
-async function handShake({
+async function markAsRead({
   url,
   mailboxID,
   mailboxPassword,
   sharedKey,
+  message,
   agent,
 }) {
-  try {
-    let full_url = `${url}/messageexchange/${mailboxID}`;
-    let headers = await generateHeaders({
-      mailboxID: mailboxID,
-      mailboxPassword: mailboxPassword,
-      sharedKey: sharedKey,
-    });
+  let full_url = `${url}/messageexchange/${mailboxID}/inbox/${message}/status/acknowledged`;
+  let headers = await generateHeaders({
+    mailboxID: mailboxID,
+    mailboxPassword: mailboxPassword,
+    sharedKey: sharedKey,
+  });
+  headers["content-type"] = "application/octet-stream";
 
-    let config = { headers: headers, httpsAgent: agent };
-    let response = await axios.get(full_url, config);
-    return response;
+  let config = { headers: headers };
+  // attach agent to headers
+  config.httpsAgent = agent;
+  let response = await axios.put(full_url, { messageId: message }, config);
+  try {
+    if (response.status === 200) {
+      log.debug("message cleared\n");
+      return response;
+    } else {
+      console.error(
+        "ERROR: Request 'getMessages' completed but responded with incorrect status: " +
+          response.status +
+          "\n"
+      );
+      process.exit(1);
+    }
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -84,7 +99,7 @@ async function handShake({
   }
 }
 
-export default handShake;
+export default markAsRead;
 </code></pre>
         </article>
     </section>

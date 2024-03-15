@@ -12,7 +12,6 @@
   "opts": {
     "recurse": true,
     "destination": "./docs/",
-    "template": "node_modules/clean-jsdoc-theme",
     "compilerOptions": {
       "target": "ES6",
       "module": "commonjs",

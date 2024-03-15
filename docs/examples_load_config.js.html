@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: examples/load_config.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: examples/load_config.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import log from "loglevel";
+import https from "https";
+
+/**
+ * Loads and returns the configuration settings for the message exchange system.
+ * Initializes logging level, sets up HTTPS agents based on the environment (sandbox or integration),
+ * and prepares the necessary parameters for message exchange operations.
+ *
+ * @param {Object} config - Configuration options for setting up the environment.
+ * @param {string} [config.logLevel="DEBUG"] - Specifies the logging level.
+ * @param {string} [config.url="https://localhost:8700"] - The base URL for the message exchange service.
+ * @param {string} [config.sharedKey="TestKey"] - The shared key used for authentication.
+ * @param {string} [config.sandbox="true"] - Flag indicating whether to run in sandbox mode (ignores SSL errors).
+ * @param {string} [config.senderCert] - The certificate for the sender, required for integration mode.
+ * @param {string} [config.senderKey] - The private key for the sender, required for integration mode.
+ * @param {string} [config.receiverCert] - The certificate for the receiver, required for integration mode.
+ * @param {string} [config.receiverKey] - The private key for the receiver, required for integration mode.
+ * @param {string} [config.senderMailboxID="X26ABC1"] - The mailbox ID of the sender.
+ * @param {string} [config.senderMailboxPassword="password"] - The mailbox password of the sender.
+ * @param {string} [config.receiverMailboxID="X26ABC2"] - The mailbox ID of the receiver.
+ * @param {string} [config.receiverMailboxPassword="password"] - The mailbox password of the receiver.
+ * @param {string} [config.messageContent="This is a test"] - Default message content for testing.
+ * @param {string} [config.fileContent="node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv"] - Path to a file containing test data.
+ * @returns {Promise&lt;Object>} A promise that resolves to an object containing the loaded configuration settings.
+ */
+export async function loadConfig({
+  logLevel = "DEBUG",
+  url = "https://localhost:8700",
+  sharedKey = "TestKey",
+  sandbox = "true",
+  senderCert,
+  senderKey,
+  receiverCert,
+  receiverKey,
+  senderMailboxID = "X26ABC1",
+  senderMailboxPassword = "password",
+  receiverMailboxID = "X26ABC2",
+  receiverMailboxPassword = "password",
+  messageContent = "This is a test",
+  fileContent = "node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv",
+}) {
+  log.setLevel(log.levels[logLevel]);
+  let senderAgent;
+  let receiverAgent;
+
+  if (sandbox === "true") {
+    log.debug("Running in sandbox mode");
+    // just setup to ignore self-signed certs
+    senderAgent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+
+    receiverAgent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+  } else {
+    log.debug("Running in integration mode");
+    // Setup the https agents for integration, you can ignore this for sandbox
+    senderAgent = new https.Agent({
+      cert: senderCert,
+      key: senderKey,
+      rejectUnauthorized: false,
+    });
+    receiverAgent = new https.Agent({
+      cert: receiverCert,
+      key: receiverKey,
+      rejectUnauthorized: false,
+    });
+  }
+
+  log.debug("Environment variables loaded");
+
+  return {
+    logLevel,
+    url,
+    sharedKey,
+    senderAgent,
+    receiverAgent,
+    senderMailboxID,
+    senderMailboxPassword,
+    receiverMailboxID,
+    receiverMailboxPassword,
+    messageContent,
+    fileContent,
+  };
+}
+
+export default loadConfig;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#CHUNK_SIZE">CHUNK_SIZE</a></li><li><a href="global.html#compressData">compressData</a></li><li><a href="global.html#createMessageChunks">createMessageChunks</a></li><li><a href="global.html#createMessages">createMessages</a></li><li><a href="global.html#generateHeaders">generateHeaders</a></li><li><a href="global.html#generateToken">generateToken</a></li><li><a href="global.html#getMessageCount">getMessageCount</a></li><li><a href="global.html#handShake">handShake</a></li><li><a href="global.html#loadConfig">loadConfig</a></li><li><a href="global.html#markAsRead">markAsRead</a></li><li><a href="global.html#readMessage">readMessage</a></li><li><a href="global.html#receiveMessage">receiveMessage</a></li><li><a href="global.html#safeStringify">safeStringify</a></li><li><a href="global.html#sendChunkedMessage">sendChunkedMessage</a></li><li><a href="global.html#sendMessage">sendMessage</a></li><li><a href="global.html#splitIntoChunks">splitIntoChunks</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Fri Mar 15 2024 23:35:55 GMT+0000 (Greenwich Mean Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
