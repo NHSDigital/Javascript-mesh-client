@@ -11,7 +11,6 @@ Welcome to the Javascript MESH client repo. This repository houses a Javascript 
   - [Table of Contents](#table-of-contents)
   - [Setup](#setup)
   - [Usage](#usage)
-    - [MESH module services](#mesh-module-services)
     - [Testing](#testing)
   - [Contacts](#contacts)
   - [Licence](#licence)
