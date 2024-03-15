@@ -10,6 +10,7 @@ import markAsRead from "../put/mark_as_read.js";
  * Receives messages for a configured mailbox, acknowledging each message to clear it from the mailbox.
  * It checks for new messages, reads them, and marks them as read.
  *
+ * @module receiveMessage
  * @param {Object} config The configuration settings used for message exchange.
  * @param {string} [config.logLevel="DEBUG"] - Logging level. Determines the verbosity of logs produced by the application.
  * @param {string} [config.url="https://localhost:8700"] - The URL of the message exchange service. This is the endpoint where messages will be sent and received.

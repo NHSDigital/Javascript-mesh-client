@@ -9,6 +9,7 @@ import log from "loglevel";
  *
  * A successful response should have a status of 200, but that needs to be checked at the client side.
  *
+ * @module get
  * @param {Object} params - The parameters for the handshake operation.
  * @param {string} params.url - The base URL for the handshake operation.
  * @param {string} params.mailboxID - The mailbox ID used for generating headers.

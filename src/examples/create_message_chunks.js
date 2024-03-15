@@ -7,6 +7,7 @@ import https from "https";
  * Creates and sends a chunked message from a file using the provided configuration settings.
  * Similar to createMessages, it checks the mailbox connection before proceeding with the message sending.
  *
+ * @module createMessageChunks
  * @param {Object} config The configuration settings used for message exchange.
  * @param {string} [config.logLevel="DEBUG"] - Logging level. Determines the verbosity of logs produced by the application.
  * @param {string} [config.url="https://localhost:8700"] - The URL of the message exchange service. This is the endpoint where messages will be sent and received.

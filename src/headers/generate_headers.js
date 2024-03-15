@@ -5,6 +5,8 @@ import pkg from "../../package.json" assert { type: "json" };
 
 /**
  * Generates an authentication token for MESH. The token is freshly generated for each call.
+ *
+ * @module headers
  * @param {Object} params Parameters for generating the token.
  * @param {string} params.mailboxID The mailbox ID.
  * @param {string} params.mailboxPassword The password for the mailbox.

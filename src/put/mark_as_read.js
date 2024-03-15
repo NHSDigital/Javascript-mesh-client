@@ -7,6 +7,7 @@ import generateHeaders from "../headers/generate_headers.js";
  * Marks a specified message as read in the mailbox. It constructs a PUT request to the service endpoint
  * to update the message status to 'acknowledged'. Generates necessary headers for authentication and authorization.
  *
+ * @module put
  * @param {Object} params - The parameters for the mark as read operation.
  * @param {string} params.url - The base URL for the message exchange service.
  * @param {string} params.mailboxID - The mailbox ID used in the URL and for generating headers.

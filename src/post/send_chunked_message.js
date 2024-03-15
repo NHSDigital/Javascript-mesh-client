@@ -9,11 +9,14 @@ import generateHeaders from "../headers/generate_headers.js";
  * multiplying it by 1024 to convert it to kilobytes (KB), it then multiples it again by 1024 to convert it
  * to megabytes (MB).
  * For example, 10 * 1024 * 1024 sets the chunk size to 10 MB.
+ * @module post
  */
 const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
 
 /**
  * Compresses provided data using gzip compression.
+ *
+ * @module post
  * @param {Buffer|string} data - The data to compress.
  * @returns {Promise<Buffer>} A promise that resolves with the compressed data as a Buffer.
  */
@@ -33,6 +36,8 @@ async function compressData(data) {
 
 /**
  * Splits a buffer into chunks of a predefined size.
+ *
+ * @module post
  * @param {Buffer} buffer - The buffer to split.
  * @returns {Promise<Buffer[]>} A promise that resolves with an array of buffer chunks.
  */
@@ -53,6 +58,7 @@ async function splitIntoChunks(buffer) {
  * Sends a message in chunked form. Each chunk is compressed and sent sequentially.
  * The function handles creating and sending each chunk, and returns the result of the operation.
  *
+ * @module post
  * @param {Object} params - Parameters for sending the chunked message.
  * @param {string} params.url - The base URL for the message exchange service.
  * @param {string} params.mailboxID - The sender's mailbox ID.
