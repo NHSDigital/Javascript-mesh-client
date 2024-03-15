@@ -3,6 +3,11 @@ import log from "loglevel";
 import generateHeaders from "../headers/generate_headers.js";
 import zlib from "zlib";
 
+/**
+ * Safely stringifies an object into JSON format, avoiding circular reference issues.
+ * @param {Object} obj - The object to stringify.
+ * @returns {string} A JSON string representation of the object.
+ */
 function safeStringify(obj) {
   const seen = new WeakSet();
   return JSON.stringify(obj, (key, value) => {
@@ -16,6 +21,24 @@ function safeStringify(obj) {
   });
 }
 
+/**
+ * Sends a message to a specified mailbox, with options for compression and custom headers.
+ * The message is sent to the outbox of the specified mailbox ID at the given URL.
+ *
+ * @param {Object} params - The parameters for sending a message.
+ * @param {string} params.url - The base URL for the message exchange service.
+ * @param {string} params.mailboxID - The sender's mailbox ID.
+ * @param {string} params.mailboxPassword - The sender's mailbox password.
+ * @param {string} params.sharedKey - The shared key for generating headers.
+ * @param {string|Buffer} params.message - The message content to send. If compression is enabled, the message should be a string that will be converted to Buffer.
+ * @param {string} params.mailboxTarget - The recipient's mailbox ID.
+ * @param {Object} params.agent - The HTTPS agent for the request, handling SSL/TLS configurations and timeouts.
+ * @param {boolean} [params.compressed=false] - Flag indicating whether the message should be compressed with gzip before sending.
+ * @param {string} [params.workFlowId="API-DOCS-TEST"] - The workflow ID to include in the message headers.
+ * @param {string} [params.fileName="message.txt"] - The file name to include in the message headers.
+ * @returns {Promise<Object>} A promise that resolves with the response from the server if the request is successful, or an error object if the request fails.
+ * @throws {Error} Throws an error if the request setup fails or if there are issues with the parameters.
+ */
 async function sendMessage({
   url,
   mailboxID,
@@ -32,7 +55,6 @@ async function sendMessage({
   const headers = await generateHeaders({
     mailboxID: mailboxID,
     mailboxPassword: mailboxPassword,
-    mailboxTarget: mailboxTarget,
     sharedKey: sharedKey,
   });
   headers["content-type"] = "application/octet-stream";

@@ -1,8 +1,18 @@
 import crypto from "crypto";
 import { v4 as uuid } from "uuid";
+// @ts-ignore
 import pkg from "../../package.json" assert { type: "json" };
 
-// Generates the token, this will be generated fresh for each call, as required by MESH
+/**
+ * Generates an authentication token for MESH. The token is freshly generated for each call.
+ * @param {Object} params Parameters for generating the token.
+ * @param {string} params.mailboxID The mailbox ID.
+ * @param {string} params.mailboxPassword The password for the mailbox.
+ * @param {string} params.sharedKey The shared key for HMAC generation.
+ * @param {string} [params.nonce] The nonce value. If not provided, a new UUID v4 is generated.
+ * @param {number} [params.nonceCount=0] The nonce count. Defaults to 0.
+ * @returns {Promise<string>} The generated token.
+ */
 async function generateToken({
   mailboxID,
   mailboxPassword,
@@ -26,6 +36,14 @@ async function generateToken({
   return `${auth_schema_name}${mailboxID}:${nonce}:${nonceCount}:${timestamp}:${hmac}`;
 }
 
+/**
+ * Generates the headers required for a MESH request.
+ * @param {Object} params Parameters for header generation.
+ * @param {string} params.mailboxID The mailbox ID.
+ * @param {string} params.mailboxPassword The password for the mailbox.
+ * @param {string} params.sharedKey The shared key for HMAC generation.
+ * @returns {Promise<Object>} An object containing the request headers.
+ */
 async function generateHeaders({ mailboxID, mailboxPassword, sharedKey }) {
   let token = await generateToken({
     mailboxID: mailboxID,

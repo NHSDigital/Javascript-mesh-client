@@ -1,12 +1,22 @@
 import axios from "axios";
 import zlib from "zlib";
 import log from "loglevel";
-import { Readable } from "stream";
 import generateHeaders from "../headers/generate_headers.js";
 
+/**
+ * This const sets the size of each chunk in bytes. This constant sets the maximum amount of data (in bytes)
+ * that each chunk can contain when sending a message in chunked form. It is calculated by taking a value and
+ * multiplying it by 1024 to convert it to kilobytes (KB), it then multiples it again by 1024 to convert it
+ * to megabytes (MB).
+ * For example, 10 * 1024 * 1024 sets the chunk size to 10 MB.
+ */
 const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
-// const CHUNK_SIZE = 1 * 1024 * 1024; // 1 MB
 
+/**
+ * Compresses provided data using gzip compression.
+ * @param {Buffer|string} data - The data to compress.
+ * @returns {Promise<Buffer>} A promise that resolves with the compressed data as a Buffer.
+ */
 async function compressData(data) {
   try {
     return new Promise((resolve, reject) => {
@@ -21,6 +31,11 @@ async function compressData(data) {
   }
 }
 
+/**
+ * Splits a buffer into chunks of a predefined size.
+ * @param {Buffer} buffer - The buffer to split.
+ * @returns {Promise<Buffer[]>} A promise that resolves with an array of buffer chunks.
+ */
 async function splitIntoChunks(buffer) {
   try {
     let chunks = [];
@@ -34,6 +49,20 @@ async function splitIntoChunks(buffer) {
   }
 }
 
+/**
+ * Sends a message in chunked form. Each chunk is compressed and sent sequentially.
+ * The function handles creating and sending each chunk, and returns the result of the operation.
+ *
+ * @param {Object} params - Parameters for sending the chunked message.
+ * @param {string} params.url - The base URL for the message exchange service.
+ * @param {string} params.mailboxID - The sender's mailbox ID.
+ * @param {string} params.mailboxPassword - The sender's mailbox password.
+ * @param {string} params.sharedKey - The shared key for generating headers.
+ * @param {string} params.mailboxTarget - The recipient's mailbox ID.
+ * @param {Object} params.agent - The HTTPS agent for the request, handling SSL/TLS configurations and timeouts.
+ * @param {Buffer} params.fileContent - The content of the file to send, as a Buffer.
+ * @returns {Promise<Object>} A promise that resolves with the status and data of the send operation, or rejects with an error.
+ */
 async function sendChunkedMessage({
   url,
   mailboxID,
@@ -69,7 +98,6 @@ async function sendChunkedMessage({
       let headers = await generateHeaders({
         mailboxID: mailboxID,
         mailboxPassword: mailboxPassword,
-        mailboxTarget: mailboxTarget,
         sharedKey: sharedKey,
       });
       headers["content-type"] = "application/octet-stream";

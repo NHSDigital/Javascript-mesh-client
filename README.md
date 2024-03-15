@@ -3,7 +3,7 @@
 [![CI/CD Pull Request](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml/badge.svg)](https://github.com/nhs-england-tools/repository-template/actions/workflows/cicd-1-pull-request.yaml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=repository-template&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=repository-template)
 
-Welcome to the Galleri MESH client. This repository houses a Javascript MESH client which is used by the Galleri project to communicate with [MESH](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh), however it is intended to be universal so any teams that want to use javascript to talk to mesh could utilize this client
+Welcome to the Javascript MESH client repo. This repository houses a Javascript MESH client which can be used by any nodejs application to communicate with [MESH](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh)
 
 ## Table of Contents
 
@@ -16,112 +16,81 @@ Welcome to the Galleri MESH client. This repository houses a Javascript MESH cli
   - [Contacts](#contacts)
   - [Licence](#licence)
 
+## Installation
+
+This library does not require any external dependencies beyond those used in the src directory files. However, ensure you have a modern version of Node.js installed that supports ES Modules.
+
+you can install the module with `npm i nhs-mesh-client`
+
 ## Setup
 
-This client is compatible with the sandbox, integration and production MESH systems. To use it follow these instructions:
+This client is compatible with the sandbox, integration and production MESH systems.
 
-1. install the module with `npm i nhs-mesh-client`
+The repository is structured into several directories, each containing specific types of operations:
 
-2. Set the environmental variables to configure the targets, you can do this by setting the environment variables in a .env file or use system variables.
+- `get/`: Contains functions for retrieving information from the message exchange system.
+- `put/`: Contains functions for updating the status of messages.
+- `post/`: Contains functions for creating or sending messages.
+- `examples/`: Contains examples on how to use the functions in practical scenarios.
 
-3. If you want to run against a local sandbox for testing you can use the following example which will work with the defaults if you are running [mesh-sandbox](https://github.com/NHSDigital/mesh-sandbox) locally
+## Functions
 
-```shell
-# Required variables
+### Handshake
 
-# enables or disabled sandbox mode, this should be set to `true` for the sandbox or `false` for integration environments
-export MESH_SANDBOX=true
+- `handShake`: Establishes a connection with the message exchange system, ensuring that communication is possible.
 
-# The url for the interface you will be connecting to, this is the default
-# for a local sandbox environment
-export MESH_URL="https://localhost:8700"
+### Message Retrieval
 
-# The ID of the mailbox that you want to send messages from, default is the mesh-sandbox id
-export MESH_SENDER_MAILBOX_ID="X26ABC1"
+- `getMessageCount`: Retrieves the count of messages currently stored in the mailbox.
+- `readMessage`: Reads the content of a specific message.
 
-# The Password of the mailbox that you want to send messages to, default is the mesh-sandbox password
-export MESH_SENDER_MAILBOX_PASSWORD="password"
+### Message Management
 
-# The ID of the mailbox that you want to receive messages from, default is the mesh-sandbox id
-export MESH_RECEIVER_MAILBOX_ID="X26ABC2"
+- `markAsRead`: Marks a message as read or acknowledged, updating its status within the system.
 
-# The Password of the mailbox that you want to receive messages to, default is the mesh-sandbox password
-export MESH_RECEIVER_MAILBOX_PASSWORD="password"
+### Message Creation and Sending
 
-# The message content that will be delivered
-MESH_MESSAGE="This is a test"
+- `sendMessage`: Sends a new message to the specified recipient.
+- `sendChunkedMessage`: Sends a large message in chunks, suitable for handling large datasets or files.
 
-# Set the log level you want to see, for testing the recommended setting is `DEBUG` but there are also `ERROR` and `INFO` levels
-LOG_LEVEL="DEBUG"
+### Configuration and Examples
 
-
-
-# Optional vars which are needed for integration but not for sandbox
-
-# The location of the certificate used by the sending mailbox, only required for integration and production.
-MESH_SENDER_CERT_LOCATION="/cert/location/here"
-
-# The location of the key used with the certificate above, only required for integration and production.
-MESH_SENDER_KEY_LOCATION="/cert/location/here"
-
-# The location of the certificate used by the receiving mailbox, only required for integration and production.
-MESH_RECEIVER_CERT_LOCATION="/cert/location/here"
-
-# The location of the key used with the certificate above, only required for integration and production.
-MESH_RECEIVER_KEY_LOCATION="/cert/location/here"
-
-# The location of the CA cert which is required for integration and production MESH systems.
-MESH_SENDER_CA_LOCATION="/cert/location/here"
-```
+- `loadConfig`: Loads and returns configuration settings for the message exchange system, preparing it for operation.
+- `createMessages`: Demonstrates how to create and send a message using the system.
+- `createMessageChunks`: Demonstrates how to send a large message in chunks.
+- `receiveMessage`: Demonstrates how to retrieve and process messages from the mailbox.
 
 ## Usage
 
-See MeshService.test.js to see an implementation of the mesh module services configured to send and receive a message/file.
+To use any of the provided functions, first ensure you have the necessary configuration. This typically involves setting up authentication details, specifying the target mailbox IDs, and other relevant settings. Here's a basic example:
 
-You will need the dotenv package for the following.
-To connect to the sanbox environment the following environmental variables need to be set:
+```javascript
+import { loadConfig, createMessages } from "./src/index.js";
 
-```bash
-LOG_LEVEL="DEBUG"
-MESH_URL="https://localhost:8700"
-MESH_SHARED_KEY="TestKey"
-MESH_SENDER_MAILBOX_ID="X26ABC1"
-MESH_SENDER_MAILBOX_ACCESS_ID=""
-MESH_RECEIVER_MAILBOX_ID="X26ABC2"
-MESH_RECEIVER_MAILBOX_ACCESS_ID=""
-MESH_DATA_FILE="./tests/testdata-organizations-100000.csv"
-MESH_SANDBOX="true"
-MESH_RECEIVE_TIMEOUT="30"
+async function main() {
+  const config = await loadConfig({
+    logLevel: "DEBUG",
+    url: "https://example.com/messaging",
+    // additional configuration options...
+  });
+
+  await createMessages(config);
+}
+
+main();
 ```
 
-Alternatively see meshModuleTemplate.js which contains an example on connecting to your own MESH Mailbox by setting your own environmental variables.
+## Contributing
 
-### MESH module services
+Contributions to improve or extend the functionality of this message exchange system are welcome. Please follow the existing code structure and document any new functions or changes thoroughly.
 
-The module contains a Loader, SenderService, ReceiverService and MeshService classes that need
-to be configured.
-
-Once dotenv is installed, set your values in your .env file including the message and/or file to transmit. The Loader class will initialise the environmental variables. User loaderInstance.state()
-to debug the values.
-
-The SenderService instance takes loaderInstance.senderConfig() as an argument and sets the
-senderInstance values. You can pass in different loaderInstances to configure multiple senderInstances. A Payload object containing the message and/or file to transmit. A destination which is the receiver mailbox id.
-
-The receiverService instance takes loaderInstance.receiverConfig() as an argument and sets the
-receiverInstance values. You can pass in different loaderInstances to configure multiple receiverInstances.
-
-The MeshServices instance takes as argument a senderInstance and a receiverInstance and creates
-a sender/receiver relationship between the two instances. You can use meshInstance to call
-sendMessage(), sendFile() and receiveMessage(). You can configure multiple meshInstances with
-different sender/receiver instances and allow relationships between different senders and receivers.
-
-### Testing
+## Testing
 
 `npm test` will execute meshService.test.js.
 
 ## Contacts
 
-Maintainers: andrew cleveland
+Maintainers: [andrew cleveland](mainto:andrew.cleveland1@nhs.net)
 
 ## Licence
 
