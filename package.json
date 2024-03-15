@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/NHSDigital/Javascript-mesh-client#readme",
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.504.0",
+    "@aws-sdk/client-secrets-manager": "^3.534.0",
     "archiver": "^6.0.1",
     "axios": "^1.6.2",
     "csv-parser": "^3.0.0",
