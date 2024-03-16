@@ -5,10 +5,16 @@ import sendMessage from "../post/send_message.js";
 import https from "https";
 
 /**
+ * @namespace createMessages
+ * @memberof createMessages
+ */
+
+/**
  * Creates and sends a message using the provided configuration settings.
  * This function first ensures a connection to the mailbox via a handshake before sending the message.
  *
- * @module createMessages
+ * @memberof createMessages
+ * @function createMessages
  * @param {Object} config The configuration settings used for message exchange.
  * @param {string} [config.logLevel="DEBUG"] - Logging level. Determines the verbosity of logs produced by the application.
  * @param {string} [config.url="https://localhost:8700"] - The URL of the message exchange service. This is the endpoint where messages will be sent and received.

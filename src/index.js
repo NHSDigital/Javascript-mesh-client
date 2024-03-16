@@ -10,4 +10,4 @@ export { default as sendChunkedMessage } from "./post/send_chunked_message.js";
 export { default as loadConfig } from "./examples/load_config.js";
 export { default as createMessageChunks } from "./examples/create_message_chunks.js";
 export { default as createMessages } from "./examples/send_message.js";
-export { default as receiveMessage } from "./examples/read_message.js";
+export { default as receiveMessage } from "./examples/receive_message.js";

@@ -3,11 +3,17 @@ import log from "loglevel";
 import generateHeaders from "../headers/generate_headers.js";
 
 /**
+ * @namespace readMessage
+ * @memberof readMessage
+ */
+
+/**
  * Reads a message from the mailbox, handling both single and chunked message types. For chunked messages,
  * it iteratively requests each chunk until the entire message is retrieved. The function logs the response status,
  * headers, and data. In case of errors, it logs the error details.
  *
- * @module get
+ * @memberof readMessage
+ * @function readMessage
  * @param {Object} params - The parameters for reading a message.
  * @param {string} params.url - The base URL for the message exchange service.
  * @param {string} params.mailboxID - The mailbox ID, used in generating headers and constructing the URL.

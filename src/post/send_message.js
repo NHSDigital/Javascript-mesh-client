@@ -4,8 +4,15 @@ import generateHeaders from "../headers/generate_headers.js";
 import zlib from "zlib";
 
 /**
+ * @namespace sendMessage
+ * @memberof sendMessage
+ */
+
+/**
  * Safely stringifies an object into JSON format, avoiding circular reference issues.
- * @module post
+ *
+ * @memberof sendMessage
+ * @function safeStringify
  * @param {Object} obj - The object to stringify.
  * @returns {string} A JSON string representation of the object.
  */
@@ -26,7 +33,8 @@ function safeStringify(obj) {
  * Sends a message to a specified mailbox, with options for compression and custom headers.
  * The message is sent to the outbox of the specified mailbox ID at the given URL.
  *
- * @module post
+ * @memberof sendMessage
+ * @function sendMessage
  * @param {Object} params - The parameters for sending a message.
  * @param {string} params.url - The base URL for the message exchange service.
  * @param {string} params.mailboxID - The sender's mailbox ID.

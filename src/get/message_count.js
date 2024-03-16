@@ -3,6 +3,11 @@ import log from "loglevel";
 import generateHeaders from "../headers/generate_headers.js";
 
 /**
+ * @namespace getMessageCount
+ * @memberof getMessageCount
+ */
+
+/**
  * Retrieves the count of messages in the mailbox's inbox. It constructs the URL for the inbox,
  * generates the necessary headers, and sends a GET request. The response, containing the
  * message count, is returned directly.
@@ -10,7 +15,8 @@ import generateHeaders from "../headers/generate_headers.js";
  * If the request encounters errors (e.g., network issues, server errors), it logs the error details.
  * A successful response should have a status of 200, but that needs to be checked at the client side.
  *
- * @module get
+ * @memberof getMessageCount
+ * @function getMessageCount
  * @param {Object} params - The parameters for fetching the message count.
  * @param {string} params.url - The base URL for the message exchange service.
  * @param {string} params.mailboxID - The mailbox ID, used in generating headers and constructing the URL.

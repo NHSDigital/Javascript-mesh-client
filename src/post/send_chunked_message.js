@@ -4,19 +4,25 @@ import log from "loglevel";
 import generateHeaders from "../headers/generate_headers.js";
 
 /**
+ * @namespace sendChunkedMessage
+ * @memberof sendChunkedMessage
+ */
+
+/**
  * This const sets the size of each chunk in bytes. This constant sets the maximum amount of data (in bytes)
  * that each chunk can contain when sending a message in chunked form. It is calculated by taking a value and
  * multiplying it by 1024 to convert it to kilobytes (KB), it then multiples it again by 1024 to convert it
  * to megabytes (MB).
  * For example, 10 * 1024 * 1024 sets the chunk size to 10 MB.
- * @module post
+ * @memberof sendChunkedMessage
  */
 const CHUNK_SIZE = 10 * 1024 * 1024; // 10 MB
 
 /**
  * Compresses provided data using gzip compression.
  *
- * @module post
+ * @memberof sendChunkedMessage
+ * @function compressData
  * @param {Buffer|string} data - The data to compress.
  * @returns {Promise<Buffer>} A promise that resolves with the compressed data as a Buffer.
  */
@@ -37,7 +43,8 @@ async function compressData(data) {
 /**
  * Splits a buffer into chunks of a predefined size.
  *
- * @module post
+ * @memberof sendChunkedMessage
+ * @function splitIntoChunks
  * @param {Buffer} buffer - The buffer to split.
  * @returns {Promise<Buffer[]>} A promise that resolves with an array of buffer chunks.
  */
@@ -58,7 +65,8 @@ async function splitIntoChunks(buffer) {
  * Sends a message in chunked form. Each chunk is compressed and sent sequentially.
  * The function handles creating and sending each chunk, and returns the result of the operation.
  *
- * @module post
+ * @memberof sendChunkedMessage
+ * @function sendChunkedMessage
  * @param {Object} params - Parameters for sending the chunked message.
  * @param {string} params.url - The base URL for the message exchange service.
  * @param {string} params.mailboxID - The sender's mailbox ID.

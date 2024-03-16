@@ -4,9 +4,15 @@ import { v4 as uuid } from "uuid";
 import pkg from "../../package.json" assert { type: "json" };
 
 /**
+ * @namespace generateHeaders
+ * @memberof generateHeaders
+ */
+
+/**
  * Generates an authentication token for MESH. The token is freshly generated for each call.
  *
- * @module headers
+ * @memberof generateHeaders
+ * @function generateToken
  * @param {Object} params Parameters for generating the token.
  * @param {string} params.mailboxID The mailbox ID.
  * @param {string} params.mailboxPassword The password for the mailbox.
@@ -40,6 +46,9 @@ async function generateToken({
 
 /**
  * Generates the headers required for a MESH request.
+ *
+ * @memberof generateHeaders
+ * @function generateHeaders
  * @param {Object} params Parameters for header generation.
  * @param {string} params.mailboxID The mailbox ID.
  * @param {string} params.mailboxPassword The password for the mailbox.

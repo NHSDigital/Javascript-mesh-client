@@ -2,11 +2,17 @@ import log from "loglevel";
 import https from "https";
 
 /**
+ * @namespace loadConfig
+ * @memberof loadConfig
+ */
+
+/**
  * Loads and returns the configuration settings for the message exchange system.
  * Initializes logging level, sets up HTTPS agents based on the environment (sandbox or integration),
  * and prepares the necessary parameters for message exchange operations.
  *
- * @module loadConfig
+ * @memberof loadConfig
+ * @function loadConfig
  * @param {Object} config - Configuration options for setting up the environment.
  * @param {string} [config.logLevel="DEBUG"] - Specifies the logging level.
  * @param {string} [config.url="https://localhost:8700"] - The base URL for the message exchange service.

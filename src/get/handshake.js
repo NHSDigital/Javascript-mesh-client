@@ -3,13 +3,19 @@ import generateHeaders from "../headers/generate_headers.js";
 import log from "loglevel";
 
 /**
+ * @namespace handShake
+ * @memberof handShake
+ */
+
+/**
  * Performs a handshake operation with a specified URL using the mailbox credentials and shared key.
  * It constructs the full URL, generates necessary headers, and sends a GET request to the server.
  * Logs the outcome and returns the response if successful; otherwise, logs the error.
  *
  * A successful response should have a status of 200, but that needs to be checked at the client side.
  *
- * @module get
+ * @memberof handShake
+ * @function handShake
  * @param {Object} params - The parameters for the handshake operation.
  * @param {string} params.url - The base URL for the handshake operation.
  * @param {string} params.mailboxID - The mailbox ID used for generating headers.
