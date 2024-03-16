@@ -23,6 +23,7 @@ import log from "loglevel";
  * @param {Object} params.agent - The HTTPS agent used for the request (for handling SSL/TLS configurations).
  * @returns {Promise<Object>} - The response from the server if the request is successful; otherwise, an error object.
  * @throws {Error} - Throws an error if the request setup fails before sending or if there are issues with parameters.
+ *
  */
 async function handShake({
   url,

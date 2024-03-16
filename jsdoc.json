@@ -31,13 +31,6 @@
   },
   "theme_opts": {
     "default_theme": "fallback-dark",
-    "title": "NHS Mesh Client",
-    "codepen": {
-      "enable_for": ["examples"],
-      "options": {
-        "js_external": "https://code.jquery.com/jquery-3.6.0.min.js",
-        "js_pre_processor": "babel"
-      }
-    }
+    "title": "NHS Mesh Client"
   }
 }
