@@ -23,7 +23,8 @@ import log from "loglevel";
  * @param {string} params.mailboxPassword - The mailbox password used for generating headers.
  * @param {string} params.sharedKey - The shared key used for generating headers.
  * @param {Object} params.agent - The HTTPS agent used for the request (for handling SSL/TLS configurations).
- * @returns {Promise&lt;Object>} - The response from the server if the request is successful; otherwise, an error object.
+ * @returns {Promise&lt;Object>} A promise that resolves to an Axios response object.
+ * The promise may reject with an Axios error object if the request fails.
  * @throws {Error} - Throws an error if the request setup fails before sending or if there are issues with parameters.
  *
  */
