@@ -5,7 +5,6 @@ import pkg from "../../package.json" assert { type: "json" };
 
 /**
  * @namespace generateHeaders
- * @memberof generateHeaders
  */
 
 /**

@@ -5,7 +5,6 @@ import https from "https";
 
 /**
  * @namespace createMessageChunks
- * @memberof createMessageChunks
  */
 
 /**

@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": ["src"],
+    "include": ["src", "README.md", "package.json"],
     "includePattern": ".js$",
     "excludePattern": "(node_modules/|docs)"
   },
@@ -11,14 +11,33 @@
   },
   "opts": {
     "recurse": true,
+    "encode": "utf8",
+    "readme": "./README.md",
     "destination": "./docs/",
+    "verbose": true,
     "template": "node_modules/clean-jsdoc-theme",
+    "default_theme": "dark",
     "compilerOptions": {
       "target": "ES6",
       "module": "commonjs",
       "checkJs": true,
       "lib": ["es6", "dom"],
       "allowSyntheticDefaultImports": true
+    }
+  },
+  "markdown": {
+    "hardwrap": false,
+    "idInHeadings": true
+  },
+  "theme_opts": {
+    "default_theme": "fallback-dark",
+    "title": "NHS Mesh Client",
+    "codepen": {
+      "enable_for": ["examples"],
+      "options": {
+        "js_external": "https://code.jquery.com/jquery-3.6.0.min.js",
+        "js_pre_processor": "babel"
+      }
     }
   }
 }

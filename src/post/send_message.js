@@ -5,7 +5,6 @@ import zlib from "zlib";
 
 /**
  * @namespace sendMessage
- * @memberof sendMessage
  */
 
 /**

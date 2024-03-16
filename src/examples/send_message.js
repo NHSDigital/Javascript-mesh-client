@@ -6,7 +6,6 @@ import https from "https";
 
 /**
  * @namespace createMessages
- * @memberof createMessages
  */
 
 /**

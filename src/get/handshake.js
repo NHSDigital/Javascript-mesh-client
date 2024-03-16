@@ -4,7 +4,6 @@ import log from "loglevel";
 
 /**
  * @namespace handShake
- * @memberof handShake
  */
 
 /**

@@ -4,7 +4,6 @@ import generateHeaders from "../headers/generate_headers.js";
 
 /**
  * @namespace getMessageCount
- * @memberof getMessageCount
  */
 
 /**

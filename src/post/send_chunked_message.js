@@ -5,7 +5,6 @@ import generateHeaders from "../headers/generate_headers.js";
 
 /**
  * @namespace sendChunkedMessage
- * @memberof sendChunkedMessage
  */
 
 /**

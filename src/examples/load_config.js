@@ -3,7 +3,6 @@ import https from "https";
 
 /**
  * @namespace loadConfig
- * @memberof loadConfig
  */
 
 /**

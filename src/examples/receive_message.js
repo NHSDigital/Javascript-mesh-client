@@ -8,7 +8,6 @@ import markAsRead from "../put/mark_as_read.js";
 
 /**
  * @namespace receiveMessage
- * @memberof receiveMessage
  */
 
 /**
