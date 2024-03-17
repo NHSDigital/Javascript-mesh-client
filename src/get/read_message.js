@@ -1,8 +1,30 @@
 import axios from "axios";
-import fs from "fs";
 import log from "loglevel";
 import generateHeaders from "../headers/generate_headers.js";
 
+/**
+ * @namespace readMessage
+ */
+
+/**
+ * Reads a message from the mailbox, handling both single and chunked message types. For chunked messages,
+ * it iteratively requests each chunk until the entire message is retrieved. The function logs the response status,
+ * headers, and data. In case of errors, it logs the error details.
+ *
+ * @memberof readMessage
+ * @function readMessage
+ * @param {Object} params - The parameters for reading a message.
+ * @param {string} params.url - The base URL for the message exchange service.
+ * @param {string} params.mailboxID - The mailbox ID, used in generating headers and constructing the URL.
+ * @param {string} params.mailboxPassword - The mailbox password, used in generating headers.
+ * @param {string} params.sharedKey - The shared key, used in generating headers.
+ * @param {string} params.messageID - The specific message ID to read from the inbox.
+ * @param {Object} params.agent - The HTTPS agent for the request, handling SSL/TLS configurations and timeouts.
+ * @returns {Promise<Object>} - An object containing the status, data, and headers from the response. For chunked
+ * messages, data contains the concatenated message data. In case of request failure, returns an error object.
+ * @throws {Error} - Throws an error if there are issues with the request setup or parameters, or if the response
+ * status indicates an error.
+ */
 async function readMessage({
   url,
   mailboxID,
@@ -65,7 +87,7 @@ async function readMessage({
       log.debug(`Chunked Messages: ${JSON.stringify(chunkedMessage)}`);
 
       return {
-        status: 206,
+        status: response.status,
         data: chunkedMessage,
         headers: response.headers,
       };
@@ -74,6 +96,7 @@ async function readMessage({
         "ERROR: Request 'getMessages' completed but responded with incorrect status: " +
           response.status
       );
+      return response;
     }
   } catch (error) {
     if (error.response) {

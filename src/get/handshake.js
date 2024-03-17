@@ -2,6 +2,30 @@ import axios from "axios";
 import generateHeaders from "../headers/generate_headers.js";
 import log from "loglevel";
 
+/**
+ * @namespace handShake
+ */
+
+/**
+ * Performs a handshake operation with a specified URL using the mailbox credentials and shared key.
+ * It constructs the full URL, generates necessary headers, and sends a GET request to the server.
+ * Logs the outcome and returns the response if successful; otherwise, logs the error.
+ *
+ * A successful response should have a status of 200, but that needs to be checked at the client side.
+ *
+ * @memberof handShake
+ * @function handShake
+ * @param {Object} params - The parameters for the handshake operation.
+ * @param {string} params.url - The base URL for the handshake operation.
+ * @param {string} params.mailboxID - The mailbox ID used for generating headers.
+ * @param {string} params.mailboxPassword - The mailbox password used for generating headers.
+ * @param {string} params.sharedKey - The shared key used for generating headers.
+ * @param {Object} params.agent - The HTTPS agent used for the request (for handling SSL/TLS configurations).
+ * @returns {Promise<Object>} A promise that resolves to an Axios response object.
+ * The promise may reject with an Axios error object if the request fails.
+ * @throws {Error} - Throws an error if the request setup fails before sending or if there are issues with parameters.
+ *
+ */
 async function handShake({
   url,
   mailboxID,
@@ -19,16 +43,7 @@ async function handShake({
 
     let config = { headers: headers, httpsAgent: agent };
     let response = await axios.get(full_url, config);
-    if (response.status === 200) {
-      log.debug(`Handshake successful, status ${response.status}\n`);
-      return response;
-    } else {
-      console.error(
-        "ERROR: Request 'handShake' completed but responded with incorrect status: " +
-          response.status
-      );
-      process.exit(1);
-    }
+    return response;
   } catch (error) {
     if (error.response) {
       // The request was made and the server responded with a status code

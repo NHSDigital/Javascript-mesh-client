@@ -1,9 +1,30 @@
 import axios from "axios";
 import { Agent } from "https";
-import { readFileSync } from "fs";
 import log from "loglevel";
 import generateHeaders from "../headers/generate_headers.js";
 
+/**
+ * @namespace markAsRead
+ */
+
+/**
+ * Marks a specified message as read in the mailbox. It constructs a PUT request to the service endpoint
+ * to update the message status to 'acknowledged'. Generates necessary headers for authentication and authorization.
+ *
+ * @memberof markAsRead
+ * @function markAsRead
+ * @param {Object} params - The parameters for the mark as read operation.
+ * @param {string} params.url - The base URL for the message exchange service.
+ * @param {string} params.mailboxID - The mailbox ID used in the URL and for generating headers.
+ * @param {string} params.mailboxPassword - The mailbox password used for generating headers.
+ * @param {string} params.sharedKey - The shared key used for generating headers.
+ * @param {string} params.message - The ID of the message to mark as read.
+ * @param {Agent} params.agent - The HTTPS agent for the request, used for its SSL/TLS configurations.
+ * @returns {Promise<Object>} A promise that resolves with the server response if the request is successful.
+ * If the response status is not 200, the process will exit with an error. If an error occurs during the request,
+ * it logs the error and returns the error object.
+ * @throws {Error} If setting up the request or executing it results in an error, an Error object is thrown.
+ */
 async function markAsRead({
   url,
   mailboxID,
