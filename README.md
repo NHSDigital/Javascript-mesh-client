@@ -9,9 +9,17 @@ Welcome to the Javascript MESH client repo. This repository houses a Javascript 
 
 - [Repository Template](#repository-template)
   - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
   - [Setup](#setup)
+  - [Functions](#functions)
+    - [Handshake](#handshake)
+    - [Message Retrieval](#message-retrieval)
+    - [Message Management](#message-management)
+    - [Message Creation and Sending](#message-creation-and-sending)
+    - [Configuration and Examples](#configuration-and-examples)
   - [Usage](#usage)
-    - [Testing](#testing)
+  - [Contributing](#contributing)
+  - [Testing](#testing)
   - [Contacts](#contacts)
   - [Licence](#licence)
 
@@ -20,6 +28,8 @@ Welcome to the Javascript MESH client repo. This repository houses a Javascript 
 This library does not require any external dependencies beyond those used in the src directory files. However, ensure you have a modern version of Node.js installed that supports ES Modules.
 
 you can install the module with `npm i nhs-mesh-client`
+
+jsdocs can be accessed [here](https://github.com/NHSDigital/Javascript-mesh-client)
 
 ## Setup
 
