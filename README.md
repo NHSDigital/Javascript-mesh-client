@@ -29,7 +29,7 @@ This library does not require any external dependencies beyond those used in the
 
 you can install the module with `npm i nhs-mesh-client`
 
-jsdocs can be accessed [here](https://github.com/NHSDigital/Javascript-mesh-client)
+jsdocs can be accessed [here](https://nhsdigital.github.io/Javascript-mesh-client/)
 
 ## Setup
 
