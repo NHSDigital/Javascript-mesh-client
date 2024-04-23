@@ -54,7 +54,7 @@ export async function createMessageChunks(config) {
     mailboxID: senderMailboxID,
     mailboxPassword: senderMailboxPassword,
     sharedKey: sharedKey,
-    agent: senderAgent,
+    agent: senderAgent
   });
 
   await sendChunkedMessage({
