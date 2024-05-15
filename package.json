@@ -29,10 +29,10 @@
   "homepage": "https://github.com/NHSDigital/Javascript-mesh-client#readme",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.504.0",
-    "archiver": "^6.0.1",
-    "axios": "^1.6.2",
+    "archiver": "^7.0.1",
+    "axios": "^1.6.8",
     "csv-parser": "^3.0.0",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.5",
     "jsdoc": "^4.0.2",
     "loglevel": "^1.8.1",
     "util": "^0.12.5",

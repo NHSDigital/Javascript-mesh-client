@@ -71,7 +71,7 @@ The repository is structured into several directories, each containing specific 
 
 ## Usage
 
-To use any of the provided functions, first ensure you have the necessary configuration. This typically involves setting up authentication details, specifying the target mailbox IDs, and other relevant settings. Here's a basic example:
+To use any of the provided functions, first ensure you have the necessary configuration. This typically involves setting up authentication details, specifying the target mailbox IDs, and other relevant settings. Here's a basic example
 
 ```javascript
 import { loadConfig, createMessages } from "./src/index.js";
