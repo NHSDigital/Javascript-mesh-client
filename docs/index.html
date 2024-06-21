@@ -1,51 +1,40 @@
 html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>NHS Mesh Client Documentation</title>
-  </head>
-  <body>
-    <h1>NHS Mesh Client Documentation</h1>
-    <p>Select a version:</p>
-    <ul id="version-list">
-      <!-- This list will be populated dynamically -->
-    </ul>
+<script>
+  // Get the list of version directories
+  const versionsDir = "docs/nhs-mesh-client/";
+  const versions = [];
 
-    <script>
-      // Get the list of version directories
-      const versionsDir = "docs/nhs-mesh-client/";
-      const versions = [];
-      fetch(versionsDir)
-        .then((response) => response.json())
-        .then((data) => {
-          data.forEach((item) => {
-            if (item.type === "dir") {
-              versions.push(item.name);
-            }
-          });
-          // Sort versions in descending order (newest first)
-          versions.sort((a, b) => {
-            const va = a.split(".").map(Number);
-            const vb = b.split(".").map(Number);
-            for (let i = 0; i < va.length; i++) {
-              if (va[i] > vb[i]) return -1;
-              if (va[i] < vb[i]) return 1;
-            }
-            return 0;
-          });
+  // Use the GitHub Pages API to retrieve the list of files and directories
+  fetch(
+    `https://api.github.com/repos/NHSDigital/Javascript-mesh-client/contents/${versionsDir}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((item) => {
+        if (item.type === "dir") {
+          versions.push(item.name);
+        }
+      });
+      // Sort versions in descending order (newest first)
+      versions.sort((a, b) => {
+        const va = a.split(".").map(Number);
+        const vb = b.split(".").map(Number);
+        for (let i = 0; i < va.length; i++) {
+          if (va[i] > vb[i]) return -1;
+          if (va[i] < vb[i]) return 1;
+        }
+        return 0;
+      });
 
-          // Create the version list
-          const versionList = document.getElementById(
-            versions.forEach((version) => {
-              const listItem = document.createElement("li");
-              const link = document.createElement("a");
-              link.href = `${versionsDir}${version}/`;
-              link.textContent = version;
-              listItem.appendChild(link);
-              versionList.appendChild(listItem);
-            })
-          );
-        });
-    </script>
-  </body>
-</html>
+      // Create the version list
+      const versionList = document.getElementById("version-list");
+      versions.forEach((version) => {
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = `${versionsDir}${version}/`;
+        link.textContent = version;
+        listItem.appendChild(link);
+        versionList.appendChild(listItem);
+      });
+    });
+</script>
