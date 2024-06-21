@@ -13,20 +13,20 @@ html
 
     <script>
       // Get the list of version directories
-      const versionsDir = 'docs/nhs-mesh-client/';
+      const versionsDir = "docs/nhs-mesh-client/";
       const versions = [];
       fetch(versionsDir)
-        .then(response => response.json())
-        .then(data => {
-          data.forEach(item => {
-            if (item.type === 'dir') {
+        .then((response) => response.json())
+        .then((data) => {
+          data.forEach((item) => {
+            if (item.type === "dir") {
               versions.push(item.name);
             }
           });
           // Sort versions in descending order (newest first)
           versions.sort((a, b) => {
-            const va = a.split('.').map(Number);
-            const vb = b.split('.').map(Number);
+            const va = a.split(".").map(Number);
+            const vb = b.split(".").map(Number);
             for (let i = 0; i < va.length; i++) {
               if (va[i] > vb[i]) return -1;
               if (va[i] < vb[i]) return 1;
@@ -36,14 +36,15 @@ html
 
           // Create the version list
           const versionList = document.getElementById(
-          versions.forEach(version => {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = `${versionsDir}${version}/`;
-            link.textContent = version;
-            listItem.appendChild(link);
-            versionList.appendChild(listItem);
-          });
+            versions.forEach((version) => {
+              const listItem = document.createElement("li");
+              const link = document.createElement("a");
+              link.href = `${versionsDir}${version}/`;
+              link.textContent = version;
+              listItem.appendChild(link);
+              versionList.appendChild(listItem);
+            })
+          );
         });
     </script>
   </body>
