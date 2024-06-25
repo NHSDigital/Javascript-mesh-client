@@ -35,6 +35,8 @@ runs:
           --health-interval 3s \
           --health-timeout 10s \
           quay.io/andrew_cleveland-cic/mesh_sandbox
+
+        podman ps -a
       continue-on-error: true
 
     - name: run test
