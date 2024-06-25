@@ -23,7 +23,7 @@ html
         .then((data) => {
           data.forEach((item) => {
             if (item.type === "dir") {
-              versions.push(`${item.name}/index.html`);
+              versions.push(`${item.name}`);
             }
           });
           // Sort versions in descending order (newest first)
@@ -42,7 +42,7 @@ html
           versions.forEach((version) => {
             const listItem = document.createElement("li");
             const link = document.createElement("a");
-            link.href = `${versionsDir}${version}/`;
+            link.href = `${versionsDir}/${version}/index.html`;
             link.textContent = version;
             listItem.appendChild(link);
             versionList.appendChild(listItem);
