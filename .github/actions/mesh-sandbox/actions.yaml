@@ -1,0 +1,37 @@
+name: "Test action"
+description: "Clones down mesh-sandbox and runs it in a container for testing"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Git checkout
+      uses: actions/checkout@v4
+
+    - name: Git checkout mesh-sandbox
+      uses: actions/checkout@v4
+      with:
+        ref: https://github.com/NHSDigital/mesh-sandbox.git
+        path: mesh-sandbox
+
+    - name: install mesh-sandbox container
+      shell: bash
+      run: |
+        podman run -d \
+          --name mesh_sandbox \
+          -p 8700:443 \
+          -e SY=TestKey \
+          -e SSL=yes \
+          -v ./mesh-sandbox/src/mesh_sandbox/store/data/mailboxes.jsonl:/app/mesh_sandbox/store/data/mailboxeo \
+          -v ./mesh-sandbox/src/mesh_sandbox/test_plugin:/app/mesh_sandbox/plugins:ro \
+          --health-cmd "curl -ksf https://localhost/health || exit 1" \
+          --health-interval 3s \
+          --health-timeout 10s \
+          quay.io/andrew_cleveland-cic/mesh_sandbox
+      continue-on-error: true
+
+    - name: run test
+      shell: bash
+      run: |
+        npm i
+        npm test
+
