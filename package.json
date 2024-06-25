@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "e2e": "node examples/conformance.js",
+    "e2e": "node src/examples/conformance.js",
     "doc": "jsdoc -c jsdoc.json"
   },
   "repository": {

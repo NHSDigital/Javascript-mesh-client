@@ -8,14 +8,7 @@ import {
   sendChunkedMessage,
 } from "../index.js";
 import fs from "fs";
-import dotenv from "dotenv";
 import log from "loglevel";
-
-// Read in values from a .env file
-const result = dotenv.config();
-if (result.error) {
-  throw result.error;
-}
 
 // This function adds a delay of however many seconds you pass in
 // This allows the mesh mailbox time to process messages before trying
@@ -33,18 +26,18 @@ async function waitForProcessing(seconds) {
 // This config will be used by the each of the following functions to define
 // The mailboxes we will be using and the content of messages.
 const config = await loadConfig({
-  logLevel: "DEBUG",
-  url: "https://msg.intspineservices.nhs.uk",
-  sharedKey: process.env.MESH_SHARED_KEY,
-  sandbox: "false",
-  senderCert: process.env.MESH_SENDER_CERT_LOCATION,
-  senderKey: process.env.MESH_SENDER_KEY_LOCATION,
-  senderMailboxID: process.env.MESH_SENDER_MAILBOX_ID,
-  senderMailboxPassword: process.env.MESH_SENDER_MAILBOX_PASSWORD,
-  receiverCert: process.env.MESH_RECEIVER_CERT_LOCATION,
-  receiverKey: process.env.MESH_RECEIVER_KEY_LOCATION,
-  receiverMailboxID: process.env.MESH_RECEIVER_MAILBOX_ID,
-  receiverMailboxPassword: process.env.MESH_RECEIVER_MAILBOX_PASSWORD,
+  // logLevel: "DEBUG",
+  // url: "https://msg.intspineservices.nhs.uk",
+  // sharedKey: process.env.MESH_SHARED_KEY,
+  // sandbox: "false",
+  // senderCert: process.env.MESH_SENDER_CERT_LOCATION,
+  // senderKey: process.env.MESH_SENDER_KEY_LOCATION,
+  // senderMailboxID: process.env.MESH_SENDER_MAILBOX_ID,
+  // senderMailboxPassword: process.env.MESH_SENDER_MAILBOX_PASSWORD,
+  // receiverCert: process.env.MESH_RECEIVER_CERT_LOCATION,
+  // receiverKey: process.env.MESH_RECEIVER_KEY_LOCATION,
+  // receiverMailboxID: process.env.MESH_RECEIVER_MAILBOX_ID,
+  // receiverMailboxPassword: process.env.MESH_RECEIVER_MAILBOX_PASSWORD,
 });
 
 log.setLevel(log.levels[config.logLevel]);
@@ -149,7 +142,7 @@ async function sendChunk() {
     mailboxPassword: config.senderMailboxPassword,
     mailboxTarget: config.receiverMailboxID,
     sharedKey: config.sharedKey,
-    fileContent: fs.readFileSync(config.messageFile),
+    filePath: fs.readFileSync(config.messageFile),
     agent: config.senderAgent,
   });
   log.debug(message);
@@ -175,7 +168,7 @@ async function sendBulk() {
   console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
 }
 
-async function saveMessagesInBatches() {
+async function saveMessagesInBatches(destination) {
   const startTime = Math.floor(Date.now() / 1000);
   try {
     let keepProcessing = true;
@@ -212,6 +205,7 @@ async function saveMessagesInBatches() {
             sharedKey: config.sharedKey,
             messageID: messageID,
             agent: config.receiverAgent,
+            outputFilePath: `${destination}/${messageID}`,
           }).catch((err) => {
             log.error(`Error downloading message ${messageID}: ${err}`);
             return null;
@@ -220,29 +214,31 @@ async function saveMessagesInBatches() {
 
         const messages = await Promise.all(downloadPromises);
 
-        // Asynchronously write messages to files
-        const writePromises = messages.map((message, index) => {
-          if (message) {
-            if (message.headers["mex-messagetype"] === "DATA") {
-              return fs.promises
-                .writeFile(`message/${batch[index]}.csv`, message.data)
-                .catch((err) => {
-                  log.error(`Error writing message ${batch[index]}: ${err}`);
-                });
-            } else {
-              log.warn(
-                `Undelivered message: ${message} saved in "unread" directory`
-              );
-              return fs.promises
-                .writeFile(`unread/${batch[index]}.csv`, message.data)
-                .catch((err) => {
-                  log.error(`Error writing message ${batch[index]}: ${err}`);
-                });
-            }
-          }
-        });
+        // // Asynchronously write messages to files
+        // const writePromises = messages.map((message, index) => {
+        //   if (message) {
+        //     if (
+        //       message.initial_response.headers["mex-messagetype"] === "DATA"
+        //     ) {
+        //       return fs.promises
+        //         .writeFile(`message/${batch[index]}.csv`, message.data)
+        //         .catch((err) => {
+        //           log.error(`Error writing message ${batch[index]}: ${err}`);
+        //         });
+        //     } else {
+        //       log.warn(
+        //         `Undelivered message: ${message} saved in "unread" directory`
+        //       );
+        //       return fs.promises
+        //         .writeFile(`unread/${batch[index]}.csv`, message.data)
+        //         .catch((err) => {
+        //           log.error(`Error writing message ${batch[index]}: ${err}`);
+        //         });
+        //     }
+        //   }
+        // });
 
-        await Promise.all(writePromises);
+        // await Promise.all(writePromises);
 
         // Asynchronously mark messages as read
         const markReadPromises = batch.map((messageID) =>
@@ -459,9 +455,9 @@ async function duplicateDownload() {
 
 // // Test 1, send uncompressed message and read it.
 await sendUncompressed();
-// await waitForProcessing(40);
-// await saveMessagesInBatches();
-// log.info(`Test 1 complete`);
+await waitForProcessing(40);
+await saveMessagesInBatches("tests");
+log.info(`Test 1 complete`);
 
 // // Test 2 send compressed message and read it
 // await sendCompressed();
