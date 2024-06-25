@@ -168,7 +168,7 @@ async function sendBulk() {
   console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
 }
 
-async function saveMessagesInBatches(destination) {
+async function saveMessagesInBatches(destination, fileType) {
   const startTime = Math.floor(Date.now() / 1000);
   try {
     let keepProcessing = true;
@@ -205,7 +205,7 @@ async function saveMessagesInBatches(destination) {
             sharedKey: config.sharedKey,
             messageID: messageID,
             agent: config.receiverAgent,
-            outputFilePath: `${destination}/${messageID}`,
+            outputFilePath: `${destination}/${messageID}/${fileType}`,
           }).catch((err) => {
             log.error(`Error downloading message ${messageID}: ${err}`);
             return null;
@@ -456,7 +456,7 @@ async function duplicateDownload() {
 // // Test 1, send uncompressed message and read it.
 await sendUncompressed();
 await waitForProcessing(40);
-await saveMessagesInBatches("tests");
+await saveMessagesInBatches("tests", "csv");
 log.info(`Test 1 complete`);
 
 // // Test 2 send compressed message and read it
