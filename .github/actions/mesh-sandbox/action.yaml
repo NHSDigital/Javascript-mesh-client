@@ -36,6 +36,7 @@ runs:
           --health-timeout 10s \
           quay.io/andrew_cleveland-cic/mesh_sandbox
 
+        sleep 10
         podman ps -a
       continue-on-error: true
 
@@ -43,5 +44,4 @@ runs:
       shell: bash
       run: |
         npm i
-        npm test
-        echo "success"
+        npm run e2e
