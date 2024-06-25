@@ -205,7 +205,7 @@ async function saveMessagesInBatches(destination, fileType) {
             sharedKey: config.sharedKey,
             messageID: messageID,
             agent: config.receiverAgent,
-            outputFilePath: `${destination}/${messageID}/${fileType}`,
+            outputFilePath: `${destination}/${messageID}.${fileType}`,
           }).catch((err) => {
             log.error(`Error downloading message ${messageID}: ${err}`);
             return null;
