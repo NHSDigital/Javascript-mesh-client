@@ -23,7 +23,7 @@ html
         .then((data) => {
           data.forEach((item) => {
             if (item.type === "dir") {
-              versions.push(item.name);
+              versions.push(`${item.name}/index.html`);
             }
           });
           // Sort versions in descending order (newest first)
