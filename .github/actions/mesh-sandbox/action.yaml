@@ -10,7 +10,8 @@ runs:
     - name: Git checkout mesh-sandbox
       uses: actions/checkout@v4
       with:
-        ref: https://github.com/NHSDigital/mesh-sandbox.git
+        ref: git@github.com:NHSDigital/Javascript-mesh-client.git
+        path: "mesh-sandbox"
 
     - name: install mesh-sandbox container
       shell: bash
