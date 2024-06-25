@@ -11,7 +11,6 @@ runs:
       uses: actions/checkout@v4
       with:
         ref: https://github.com/NHSDigital/mesh-sandbox.git
-        path: mesh-sandbox
 
     - name: install mesh-sandbox container
       shell: bash
