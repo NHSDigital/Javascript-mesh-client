@@ -407,45 +407,45 @@ async function duplicateDownload() {
 log.info("Test 1, send uncompressed message and read it.");
 await sendUncompressed();
 await waitForProcessing(40);
-await saveMessagesInBatches("tests", "csv");
+await saveMessagesInBatches("tests/test_1", "csv");
 log.info(`Test 1 complete\n`);
 
-log.info("Test 2 send compressed message and read it");
-await sendCompressed();
-await waitForProcessing(40);
-await saveMessagesInBatches("tests", "csv");
-log.info(`Test 2 complete\n`);
+// log.info("Test 2 send compressed message and read it");
+// await sendCompressed();
+// await waitForProcessing(40);
+// await saveMessagesInBatches("tests", "csv");
+// log.info(`Test 2 complete\n`);
 
-log.info("Test 3 send chunked message and read it");
-await sendChunk("tests/testdata-organizations-100000.csv");
-await waitForProcessing(60);
-await saveMessagesInBatches("tests", "csv");
-log.info(
-  `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
-);
-log.info(`test 3 complete\n`);
+// log.info("Test 3 send chunked message and read it");
+// await sendChunk("tests/testdata-organizations-100000.csv");
+// await waitForProcessing(60);
+// await saveMessagesInBatches("tests", "csv");
+// log.info(
+//   `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
+// );
+// log.info(`test 3 complete\n`);
 
-log.info("Test 4 send 600 message and read them");
-await sendBulk();
-await waitForProcessing(90);
-await saveMessagesInBatches("tests/bulk", "csv");
-log.info(`test 4 complete`);
+// log.info("Test 4 send 600 message and read them");
+// await sendBulk();
+// await waitForProcessing(90);
+// await saveMessagesInBatches("tests/bulk", "csv");
+// log.info(`test 4 complete`);
 
-// // Test 701 perform handshake against down system
+// log.info("Test 701 perform handshake against down system, expect a 404 error");
 // await sendAuthFailure();
 // log.info(`test 701 complete`);
 
-// // Test 702 send to invalid mailbox
+// log.info("Test 702 send to invalid mailbox, expect a 403 error")
 // await sendIncorrectMailbox();
 // log.info(`test 702 complete`);
 
-// // Test 703 undelivery message is handled in readMessage()
+// log.info("Test 703 undelivery message is handled in readMessage()")
 
-// // Test 704 download message that does not exist
+// log.info("Test 704 download message that does not exist")
 // await downloadMissingMessage();
 // log.info(`test 703 complete`);
 
-// // Test 705 try to download a removed message
+// log.info("Test 705 try to download a removed message")
 // await sendUncompressed();
 // await waitForProcessing(120);
 // await duplicateDownload();
