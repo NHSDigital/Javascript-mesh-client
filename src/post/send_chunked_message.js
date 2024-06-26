@@ -296,7 +296,7 @@ async function sendChunkedMessage({
 
     index++;
   }
-
+  
   log.debug("All chunks sent successfully");
 }
 

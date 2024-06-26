@@ -119,24 +119,16 @@ async function checkMessages() {
   }
 }
 
-async function sendChunk() {
-  // let fileBuffer = fs.readFileSync(config.messageFile);
-  // log.debug(fileBuffer.toString());
-
-  let message = await sendChunkedMessage({
+async function sendChunk(path) {
+  await sendChunkedMessage({
     url: config.url,
     mailboxID: config.senderMailboxID,
     mailboxPassword: config.senderMailboxPassword,
     mailboxTarget: config.receiverMailboxID,
     sharedKey: config.sharedKey,
-    filePath: fs.readFileSync(config.messageFile),
+    filePath: path,
     agent: config.senderAgent,
   });
-  log.debug(message);
-  if (message.status != 202) {
-    log.error(`Send message chunk failed: ${message.status}`);
-    process.exit(1);
-  }
 }
 
 async function sendBulk() {
@@ -414,26 +406,26 @@ async function duplicateDownload() {
 // The following sections run the tests,
 // I would suggest commenting them out one by one and running them
 
-// // Test 1, send uncompressed message and read it.
+log.info("Test 1, send uncompressed message and read it.");
 await sendUncompressed();
 await waitForProcessing(40);
 await saveMessagesInBatches("tests", "csv");
 log.info(`Test 1 complete`);
 
-// // Test 2 send compressed message and read it
+log.info("Test 2 send compressed message and read it");
 await sendCompressed();
 await waitForProcessing(40);
 await saveMessagesInBatches("tests", "csv");
 log.info(`Test 2 complete`);
 
-// // Test 3 send chunked message and read it
-// await sendChunk();
-// await waitForProcessing(60);
-// await saveMessagesInBatches();
-// log.info(
-//   `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
-// );
-// log.info(`test 3 complete`);
+log.info("Test 3 send chunked message and read it");
+await sendChunk("tests/testdata-organizations-100000.csv");
+await waitForProcessing(60);
+await saveMessagesInBatches("tests", "csv");
+log.info(
+  `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
+);
+log.info(`test 3 complete`);
 
 // // Test 4 send 600 message and read them
 // await sendBulk();
