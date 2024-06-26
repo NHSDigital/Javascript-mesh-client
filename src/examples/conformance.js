@@ -25,20 +25,7 @@ async function waitForProcessing(seconds) {
 
 // This config will be used by the each of the following functions to define
 // The mailboxes we will be using and the content of messages.
-const config = await loadConfig({
-  // logLevel: "DEBUG",
-  // url: "https://msg.intspineservices.nhs.uk",
-  // sharedKey: process.env.MESH_SHARED_KEY,
-  // sandbox: "false",
-  // senderCert: process.env.MESH_SENDER_CERT_LOCATION,
-  // senderKey: process.env.MESH_SENDER_KEY_LOCATION,
-  // senderMailboxID: process.env.MESH_SENDER_MAILBOX_ID,
-  // senderMailboxPassword: process.env.MESH_SENDER_MAILBOX_PASSWORD,
-  // receiverCert: process.env.MESH_RECEIVER_CERT_LOCATION,
-  // receiverKey: process.env.MESH_RECEIVER_KEY_LOCATION,
-  // receiverMailboxID: process.env.MESH_RECEIVER_MAILBOX_ID,
-  // receiverMailboxPassword: process.env.MESH_RECEIVER_MAILBOX_PASSWORD,
-});
+const config = await loadConfig({});
 
 log.setLevel(log.levels[config.logLevel]);
 
@@ -213,32 +200,6 @@ async function saveMessagesInBatches(destination, fileType) {
         );
 
         const messages = await Promise.all(downloadPromises);
-
-        // // Asynchronously write messages to files
-        // const writePromises = messages.map((message, index) => {
-        //   if (message) {
-        //     if (
-        //       message.initial_response.headers["mex-messagetype"] === "DATA"
-        //     ) {
-        //       return fs.promises
-        //         .writeFile(`message/${batch[index]}.csv`, message.data)
-        //         .catch((err) => {
-        //           log.error(`Error writing message ${batch[index]}: ${err}`);
-        //         });
-        //     } else {
-        //       log.warn(
-        //         `Undelivered message: ${message} saved in "unread" directory`
-        //       );
-        //       return fs.promises
-        //         .writeFile(`unread/${batch[index]}.csv`, message.data)
-        //         .catch((err) => {
-        //           log.error(`Error writing message ${batch[index]}: ${err}`);
-        //         });
-        //     }
-        //   }
-        // });
-
-        // await Promise.all(writePromises);
 
         // Asynchronously mark messages as read
         const markReadPromises = batch.map((messageID) =>
@@ -460,10 +421,10 @@ await saveMessagesInBatches("tests", "csv");
 log.info(`Test 1 complete`);
 
 // // Test 2 send compressed message and read it
-// await sendCompressed();
-// await waitForProcessing(40);
-// await saveMessagesInBatches();
-// log.info(`Test 2 complete`);
+await sendCompressed();
+await waitForProcessing(40);
+await saveMessagesInBatches("tests", "csv");
+log.info(`Test 2 complete`);
 
 // // Test 3 send chunked message and read it
 // await sendChunk();
