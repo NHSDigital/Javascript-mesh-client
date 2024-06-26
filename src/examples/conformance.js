@@ -8,7 +8,9 @@ import {
   sendChunkedMessage,
 } from "../index.js";
 import fs from "fs";
+import path from "path";
 import log from "loglevel";
+import assert from "assert";
 
 // This function adds a delay of however many seconds you pass in
 // This allows the mesh mailbox time to process messages before trying
@@ -32,7 +34,10 @@ log.setLevel(log.levels[config.logLevel]);
 // The following functions are setup to satisfy the conformance
 // Testing that each mesh application is required to go though.
 
-async function sendUncompressed() {
+/**
+ * @param {string} [messageContent]
+ */
+async function send(messageContent, compression = false) {
   try {
     let healthCheck = await handShake({
       url: config.url,
@@ -52,9 +57,10 @@ async function sendUncompressed() {
       mailboxID: config.senderMailboxID,
       mailboxPassword: config.senderMailboxPassword,
       sharedKey: config.sharedKey,
-      message: "This is an uncompressed message",
+      message: messageContent,
       mailboxTarget: config.receiverMailboxID,
       agent: config.senderAgent,
+      compressed: compression,
     });
 
     if (message.status != 202) {
@@ -64,41 +70,6 @@ async function sendUncompressed() {
   } catch (error) {
     log.error("An error occurred:", error.message);
     process.exit(1);
-  }
-}
-
-async function sendCompressed() {
-  try {
-    let healthCheck = await handShake({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      agent: config.senderAgent,
-    });
-
-    if (healthCheck.status != 200) {
-      log.error(`Health Check Failed: ${healthCheck}`);
-      process.exit(1);
-    }
-
-    let message = await sendMessage({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      message: "This is a compressed message",
-      mailboxTarget: config.receiverMailboxID,
-      agent: config.senderAgent,
-      compressed: true,
-    });
-
-    if (message.status != 202) {
-      log.error(`Create Message Failed: ${message.status}`);
-      process.exit(1);
-    }
-  } catch (error) {
-    log.error("An error occurred:", error.message);
   }
 }
 
@@ -135,7 +106,7 @@ async function sendBulk() {
   let messageCount = 600;
   log.info(`Sending ${messageCount} Messages`);
   for (let i = 0; i < messageCount; i++) {
-    promises.push(sendUncompressed());
+    promises.push(send());
   }
   log.debug(`awaiting all api calls to complete`);
   await Promise.all(promises);
@@ -404,16 +375,45 @@ async function saveMessagesInBatches(destination, fileType) {
 // The following sections run the tests,
 // I would suggest commenting them out one by one and running them
 
+let testMessage = `This is a test message`;
 log.info("Test 1, send uncompressed message and read it.");
-await sendUncompressed();
+await send(testMessage);
 await waitForProcessing(40);
 await saveMessagesInBatches("tests/test_1", "csv");
+// Check that the content of the message is correct
+{
+  let dirPath = "tests/test_1";
+  let csvFiles = [];
+  fs.readdirSync(dirPath).forEach((file) => {
+    if (file.endsWith(".csv")) {
+      csvFiles.push(file);
+    }
+  });
+  csvFiles.sort();
+  let filePath = path.join(dirPath, csvFiles[0]);
+  let fileContent = fs.readFileSync(filePath, "utf8");
+  assert.strictEqual(fileContent, testMessage);
+}
 log.info(`Test 1 complete\n`);
 
 log.info("Test 2 send compressed message and read it");
-await sendCompressed();
+await send(testMessage, true);
 await waitForProcessing(40);
 await saveMessagesInBatches("tests/test_2", "csv");
+// Check that the content of the message is correct
+{
+  let dirPath = "tests/test_2";
+  let csvFiles = [];
+  fs.readdirSync(dirPath).forEach((file) => {
+    if (file.endsWith(".csv")) {
+      csvFiles.push(file);
+    }
+  });
+  csvFiles.sort();
+  let filePath = path.join(dirPath, csvFiles[0]);
+  let fileContent = fs.readFileSync(filePath, "utf8");
+  assert.strictEqual(fileContent, testMessage);
+}
 log.info(`Test 2 complete\n`);
 
 log.info("Test 3 send chunked message and read it");
@@ -446,6 +446,6 @@ log.info(`test 4 complete`);
 // log.info(`test 703 complete`);
 
 // log.info("Test 705 try to download a removed message")
-// await sendUncompressed();
+// await send();
 // await waitForProcessing(120);
 // await duplicateDownload();
