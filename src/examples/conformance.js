@@ -93,8 +93,6 @@ async function sendCompressed() {
       compressed: true,
     });
 
-    log.info(message.headers);
-
     if (message.status != 202) {
       log.error(`Create Message Failed: ${message.status}`);
       process.exit(1);
@@ -406,32 +404,32 @@ async function duplicateDownload() {
 // The following sections run the tests,
 // I would suggest commenting them out one by one and running them
 
-log.info("Test 1, send uncompressed message and read it.");
-await sendUncompressed();
-await waitForProcessing(40);
-await saveMessagesInBatches("tests", "csv");
-log.info(`Test 1 complete`);
+// log.info("Test 1, send uncompressed message and read it.");
+// await sendUncompressed();
+// await waitForProcessing(40);
+// await saveMessagesInBatches("tests", "csv");
+// log.info(`Test 1 complete\n`);
 
-log.info("Test 2 send compressed message and read it");
-await sendCompressed();
-await waitForProcessing(40);
-await saveMessagesInBatches("tests", "csv");
-log.info(`Test 2 complete`);
+// log.info("Test 2 send compressed message and read it");
+// await sendCompressed();
+// await waitForProcessing(40);
+// await saveMessagesInBatches("tests", "csv");
+// log.info(`Test 2 complete\n`);
 
-log.info("Test 3 send chunked message and read it");
-await sendChunk("tests/testdata-organizations-100000.csv");
-await waitForProcessing(60);
-await saveMessagesInBatches("tests", "csv");
-log.info(
-  `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
-);
-log.info(`test 3 complete`);
+// log.info("Test 3 send chunked message and read it");
+// await sendChunk("tests/testdata-organizations-100000.csv");
+// await waitForProcessing(60);
+// await saveMessagesInBatches("tests", "csv");
+// log.info(
+//   `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
+// );
+// log.info(`test 3 complete\n`);
 
-// // Test 4 send 600 message and read them
-// await sendBulk();
-// await waitForProcessing(90);
-// await saveMessagesInBatches();
-// log.info(`test 4 complete`);
+log.info("Test 4 send 600 message and read them");
+await sendBulk();
+await waitForProcessing(90);
+await saveMessagesInBatches("tests", "csv");
+log.info(`test 4 complete`);
 
 // // Test 701 perform handshake against down system
 // await sendAuthFailure();
