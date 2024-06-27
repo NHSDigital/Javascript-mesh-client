@@ -89,13 +89,15 @@ jobs:
       - name: "Perform static analysis"
         uses: ./.github/actions/perform-static-analysis
         with:
-          sonar_organisation_key: "${{ vars.SONAR_ORGANISATION_KEY }}"
-          sonar_project_key: "${{ vars.SONAR_PROJECT_KEY }}"
+          sonar_organisation_key: "${{ secrets.SONAR_ORGANISATION_KEY }}"
+          sonar_project_key: "${{ secrets.SONAR_PROJECT_KEY }}"
           sonar_token: "${{ secrets.SONAR_TOKEN }}"
   perform-end-to-end-tests:
     name: "Perform end to end tests"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
       - name: "Run tests"
         uses: ./.github/actions/mesh-sandbox

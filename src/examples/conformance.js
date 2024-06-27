@@ -8,14 +8,10 @@ import {
   sendChunkedMessage,
 } from "../index.js";
 import fs from "fs";
-import dotenv from "dotenv";
+import path from "path";
 import log from "loglevel";
-
-// Read in values from a .env file
-const result = dotenv.config();
-if (result.error) {
-  throw result.error;
-}
+import assert from "assert";
+import crypto from "crypto";
 
 // This function adds a delay of however many seconds you pass in
 // This allows the mesh mailbox time to process messages before trying
@@ -32,27 +28,17 @@ async function waitForProcessing(seconds) {
 
 // This config will be used by the each of the following functions to define
 // The mailboxes we will be using and the content of messages.
-const config = await loadConfig({
-  logLevel: "DEBUG",
-  url: "https://msg.intspineservices.nhs.uk",
-  sharedKey: process.env.MESH_SHARED_KEY,
-  sandbox: "false",
-  senderCert: process.env.MESH_SENDER_CERT_LOCATION,
-  senderKey: process.env.MESH_SENDER_KEY_LOCATION,
-  senderMailboxID: process.env.MESH_SENDER_MAILBOX_ID,
-  senderMailboxPassword: process.env.MESH_SENDER_MAILBOX_PASSWORD,
-  receiverCert: process.env.MESH_RECEIVER_CERT_LOCATION,
-  receiverKey: process.env.MESH_RECEIVER_KEY_LOCATION,
-  receiverMailboxID: process.env.MESH_RECEIVER_MAILBOX_ID,
-  receiverMailboxPassword: process.env.MESH_RECEIVER_MAILBOX_PASSWORD,
-});
+const config = await loadConfig({});
 
 log.setLevel(log.levels[config.logLevel]);
 
 // The following functions are setup to satisfy the conformance
 // Testing that each mesh application is required to go though.
 
-async function sendUncompressed() {
+/**
+ * @param {string} [messageContent]
+ */
+async function send(messageContent, compression = false) {
   try {
     let healthCheck = await handShake({
       url: config.url,
@@ -72,9 +58,10 @@ async function sendUncompressed() {
       mailboxID: config.senderMailboxID,
       mailboxPassword: config.senderMailboxPassword,
       sharedKey: config.sharedKey,
-      message: "This is an uncompressed message",
+      message: messageContent,
       mailboxTarget: config.receiverMailboxID,
       agent: config.senderAgent,
+      compressed: compression,
     });
 
     if (message.status != 202) {
@@ -84,43 +71,6 @@ async function sendUncompressed() {
   } catch (error) {
     log.error("An error occurred:", error.message);
     process.exit(1);
-  }
-}
-
-async function sendCompressed() {
-  try {
-    let healthCheck = await handShake({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      agent: config.senderAgent,
-    });
-
-    if (healthCheck.status != 200) {
-      log.error(`Health Check Failed: ${healthCheck}`);
-      process.exit(1);
-    }
-
-    let message = await sendMessage({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      message: "This is a compressed message",
-      mailboxTarget: config.receiverMailboxID,
-      agent: config.senderAgent,
-      compressed: true,
-    });
-
-    log.info(message.headers);
-
-    if (message.status != 202) {
-      log.error(`Create Message Failed: ${message.status}`);
-      process.exit(1);
-    }
-  } catch (error) {
-    log.error("An error occurred:", error.message);
   }
 }
 
@@ -139,33 +89,25 @@ async function checkMessages() {
   }
 }
 
-async function sendChunk() {
-  // let fileBuffer = fs.readFileSync(config.messageFile);
-  // log.debug(fileBuffer.toString());
-
-  let message = await sendChunkedMessage({
+async function sendChunk(path) {
+  await sendChunkedMessage({
     url: config.url,
     mailboxID: config.senderMailboxID,
     mailboxPassword: config.senderMailboxPassword,
     mailboxTarget: config.receiverMailboxID,
     sharedKey: config.sharedKey,
-    fileContent: fs.readFileSync(config.messageFile),
+    filePath: path,
     agent: config.senderAgent,
   });
-  log.debug(message);
-  if (message.status != 202) {
-    log.error(`Send message chunk failed: ${message.status}`);
-    process.exit(1);
-  }
 }
 
-async function sendBulk() {
+async function sendBulk(messageContent) {
   const startTime = Math.floor(Date.now() / 1000);
   const promises = [];
   let messageCount = 600;
   log.info(`Sending ${messageCount} Messages`);
   for (let i = 0; i < messageCount; i++) {
-    promises.push(sendUncompressed());
+    promises.push(send(messageContent));
   }
   log.debug(`awaiting all api calls to complete`);
   await Promise.all(promises);
@@ -175,7 +117,7 @@ async function sendBulk() {
   console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
 }
 
-async function saveMessagesInBatches() {
+async function saveMessagesInBatches(destination, fileType) {
   const startTime = Math.floor(Date.now() / 1000);
   try {
     let keepProcessing = true;
@@ -212,6 +154,7 @@ async function saveMessagesInBatches() {
             sharedKey: config.sharedKey,
             messageID: messageID,
             agent: config.receiverAgent,
+            outputFilePath: `${destination}/${messageID}.${fileType}`,
           }).catch((err) => {
             log.error(`Error downloading message ${messageID}: ${err}`);
             return null;
@@ -219,30 +162,6 @@ async function saveMessagesInBatches() {
         );
 
         const messages = await Promise.all(downloadPromises);
-
-        // Asynchronously write messages to files
-        const writePromises = messages.map((message, index) => {
-          if (message) {
-            if (message.headers["mex-messagetype"] === "DATA") {
-              return fs.promises
-                .writeFile(`message/${batch[index]}.csv`, message.data)
-                .catch((err) => {
-                  log.error(`Error writing message ${batch[index]}: ${err}`);
-                });
-            } else {
-              log.warn(
-                `Undelivered message: ${message} saved in "unread" directory`
-              );
-              return fs.promises
-                .writeFile(`unread/${batch[index]}.csv`, message.data)
-                .catch((err) => {
-                  log.error(`Error writing message ${batch[index]}: ${err}`);
-                });
-            }
-          }
-        });
-
-        await Promise.all(writePromises);
 
         // Asynchronously mark messages as read
         const markReadPromises = batch.map((messageID) =>
@@ -278,227 +197,302 @@ async function saveMessagesInBatches() {
   console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
 }
 
-async function sendIncorrectMailbox() {
-  try {
-    let healthCheck = await handShake({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      agent: config.senderAgent,
-    });
+// async function sendIncorrectMailbox() {
+//   try {
+//     let healthCheck = await handShake({
+//       url: config.url,
+//       mailboxID: config.senderMailboxID,
+//       mailboxPassword: config.senderMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       agent: config.senderAgent,
+//     });
 
-    if (healthCheck.status != 200) {
-      log.error(`Health Check Failed: ${healthCheck}`);
-      process.exit(1);
-    }
+//     if (healthCheck.status != 200) {
+//       log.error(`Health Check Failed: ${healthCheck}`);
+//       process.exit(1);
+//     }
 
-    let message = await sendMessage({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      message: "This is an uncompressed message",
-      mailboxTarget: "aninvalidid1234",
-      agent: config.senderAgent,
-    });
+//     let message = await sendMessage({
+//       url: config.url,
+//       mailboxID: config.senderMailboxID,
+//       mailboxPassword: config.senderMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       message: "This is an uncompressed message",
+//       mailboxTarget: "aninvalidid1234",
+//       agent: config.senderAgent,
+//     });
 
-    log.debug(message.headers);
+//     log.debug(message.headers);
 
-    if (message.status != 202) {
-      log.error(`Create Message Failed: ${message.status}`);
-      process.exit(1);
-    }
+//     if (message.status != 202) {
+//       log.error(`Create Message Failed: ${message.status}`);
+//       process.exit(1);
+//     }
 
-    log.debug("\nTest 1: Send Uncompressed Message Success");
-  } catch (error) {
-    if (error.response) {
-      log.error(
-        `Request failed with status code ${error.response.status}: ${error.response.statusText}`
-      );
-    } else if (error.request) {
-      log.error("No response was received for the request");
-    } else {
-      log.error("Error:", error.message);
-    }
-    process.exit(1);
-  }
-}
+//     log.debug("\nTest 1: Send Uncompressed Message Success");
+//   } catch (error) {
+//     if (error.response) {
+//       log.error(
+//         `Request failed with status code ${error.response.status}: ${error.response.statusText}`
+//       );
+//     } else if (error.request) {
+//       log.error("No response was received for the request");
+//     } else {
+//       log.error("Error:", error.message);
+//     }
+//     process.exit(1);
+//   }
+// }
 
-async function sendAuthFailure() {
-  try {
-    let healthCheck = await handShake({
-      url: config.url,
-      mailboxID: "notAuthorizedMailbox",
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      agent: config.senderAgent,
-    });
+// async function sendAuthFailure() {
+//   try {
+//     let healthCheck = await handShake({
+//       url: config.url,
+//       mailboxID: "notAuthorizedMailbox",
+//       mailboxPassword: config.senderMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       agent: config.senderAgent,
+//     });
 
-    if (healthCheck.status != 200) {
-      log.error(`Health Check Failed: ${healthCheck}`);
-      process.exit(1);
-    }
+//     if (healthCheck.status != 200) {
+//       log.error(`Health Check Failed: ${healthCheck}`);
+//       process.exit(1);
+//     }
 
-    let message = await sendMessage({
-      url: config.url,
-      mailboxID: config.senderMailboxID,
-      mailboxPassword: config.senderMailboxPassword,
-      sharedKey: config.sharedKey,
-      message: "This is an uncompressed message",
-      mailboxTarget: config.receiverMailboxID,
-      agent: config.senderAgent,
-    });
+//     let message = await sendMessage({
+//       url: config.url,
+//       mailboxID: config.senderMailboxID,
+//       mailboxPassword: config.senderMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       message: "This is an uncompressed message",
+//       mailboxTarget: config.receiverMailboxID,
+//       agent: config.senderAgent,
+//     });
 
-    log.debug(message.headers);
+//     log.debug(message.headers);
 
-    if (message.status != 202) {
-      log.error(`Create Message Failed: ${message.status}`);
-      process.exit(1);
-    }
+//     if (message.status != 202) {
+//       log.error(`Create Message Failed: ${message.status}`);
+//       process.exit(1);
+//     }
 
-    log.debug("\nTest 1: Send Uncompressed Message Success");
-  } catch (error) {
-    if (error.response) {
-      log.error(
-        `Request failed with status code ${error.response.status}: ${error.response.statusText}`
-      );
-    } else if (error.request) {
-      log.error("No response was received for the request");
-    } else {
-      log.error("Error:", error.message);
-    }
-    process.exit(1);
-  }
-}
+//     log.debug("\nTest 1: Send Uncompressed Message Success");
+//   } catch (error) {
+//     if (error.response) {
+//       log.error(
+//         `Request failed with status code ${error.response.status}: ${error.response.statusText}`
+//       );
+//     } else if (error.request) {
+//       log.error("No response was received for the request");
+//     } else {
+//       log.error("Error:", error.message);
+//     }
+//     process.exit(1);
+//   }
+// }
 
-async function downloadMissingMessage() {
-  const startTime = Math.floor(Date.now() / 1000);
-  try {
-    readMessage({
-      url: config.url,
-      mailboxID: config.receiverMailboxID,
-      mailboxPassword: config.receiverMailboxPassword,
-      sharedKey: config.sharedKey,
-      messageID: "thisisaninvalidmessageid1234567890",
-      agent: config.receiverAgent,
-    });
-  } catch (error) {
-    log.error("An error occurred:", error.message);
-    process.exit(1);
-  }
-  const endTime = Math.floor(Date.now() / 1000);
-  const timeTaken = endTime - startTime;
-  console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
-}
+// async function downloadMissingMessage() {
+//   const startTime = Math.floor(Date.now() / 1000);
+//   try {
+//     readMessage({
+//       url: config.url,
+//       mailboxID: config.receiverMailboxID,
+//       mailboxPassword: config.receiverMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       messageID: "thisisaninvalidmessageid1234567890",
+//       agent: config.receiverAgent,
+//     });
+//   } catch (error) {
+//     log.error("An error occurred:", error.message);
+//     process.exit(1);
+//   }
+//   const endTime = Math.floor(Date.now() / 1000);
+//   const timeTaken = endTime - startTime;
+//   console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
+// }
 
-async function duplicateDownload() {
-  const startTime = Math.floor(Date.now() / 1000);
-  try {
-    let messageCount = await getMessageCount({
-      url: config.url,
-      mailboxID: config.receiverMailboxID,
-      mailboxPassword: config.receiverMailboxPassword,
-      sharedKey: config.sharedKey,
-      agent: config.receiverAgent,
-    });
+// async function duplicateDownload() {
+//   const startTime = Math.floor(Date.now() / 1000);
+//   try {
+//     let messageCount = await getMessageCount({
+//       url: config.url,
+//       mailboxID: config.receiverMailboxID,
+//       mailboxPassword: config.receiverMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       agent: config.receiverAgent,
+//     });
 
-    log.info(`Messages: ${messageCount.data.messages}`);
+//     log.info(`Messages: ${messageCount.data.messages}`);
 
-    // let numMessages = messageCount.data.approx_inbox_count;
-    // log.info(`${numMessages} messages in mailbox`);
+//     // let numMessages = messageCount.data.approx_inbox_count;
+//     // log.info(`${numMessages} messages in mailbox`);
 
-    // for (let i = 0; i < numMessages; i++) {
-    let messageOne = await readMessage({
-      url: config.url,
-      mailboxID: config.receiverMailboxID,
-      mailboxPassword: config.receiverMailboxPassword,
-      sharedKey: config.sharedKey,
-      messageID: "20240131162809267016_1B6541",
-      agent: config.receiverAgent,
-    });
-    log.info(`MessageID: 20240131162809267016_1B6541`);
-    log.info(`Message status: ${messageOne.status}`);
-    log.info(`Message status: ${messageOne.data}`);
+//     // for (let i = 0; i < numMessages; i++) {
+//     let messageOne = await readMessage({
+//       url: config.url,
+//       mailboxID: config.receiverMailboxID,
+//       mailboxPassword: config.receiverMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       messageID: "20240131162809267016_1B6541",
+//       agent: config.receiverAgent,
+//     });
+//     log.info(`MessageID: 20240131162809267016_1B6541`);
+//     log.info(`Message status: ${messageOne.status}`);
+//     log.info(`Message status: ${messageOne.data}`);
 
-    // await markAsRead({
-    //   url: config.url,
-    //   mailboxID: config.receiverMailboxID,
-    //   mailboxPassword: config.receiverMailboxPassword,
-    //   sharedKey: config.sharedKey,
-    //   message: "20240131162809267016_1B6541",
-    //   agent: config.receiverAgent,
-    // });
-    // log.info(`Marked messageOne as read`);
-    // await waitForProcessing(60 * 5);
+//     // await markAsRead({
+//     //   url: config.url,
+//     //   mailboxID: config.receiverMailboxID,
+//     //   mailboxPassword: config.receiverMailboxPassword,
+//     //   sharedKey: config.sharedKey,
+//     //   message: "20240131162809267016_1B6541",
+//     //   agent: config.receiverAgent,
+//     // });
+//     // log.info(`Marked messageOne as read`);
+//     // await waitForProcessing(60 * 5);
 
-    let messageTwo = await readMessage({
-      url: config.url,
-      mailboxID: config.receiverMailboxID,
-      mailboxPassword: config.receiverMailboxPassword,
-      sharedKey: config.sharedKey,
-      messageID: "20240131162429262050_1D1F5D",
-      agent: config.receiverAgent,
-    });
+//     let messageTwo = await readMessage({
+//       url: config.url,
+//       mailboxID: config.receiverMailboxID,
+//       mailboxPassword: config.receiverMailboxPassword,
+//       sharedKey: config.sharedKey,
+//       messageID: "20240131162429262050_1D1F5D",
+//       agent: config.receiverAgent,
+//     });
 
-    log.info(`MessageID: 20240131162429262050_1D1F5D`);
-    log.info(`MessageTwo status: ${messageTwo.status}`);
-    log.info(`MessageTne status: ${messageTwo.data}`);
-    // }
-  } catch (error) {
-    log.error("An error occurred:", error.message);
-    process.exit(1);
-  }
-  const endTime = Math.floor(Date.now() / 1000);
-  const timeTaken = endTime - startTime;
-  console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
-}
+//     log.info(`MessageID: 20240131162429262050_1D1F5D`);
+//     log.info(`MessageTwo status: ${messageTwo.status}`);
+//     log.info(`MessageTne status: ${messageTwo.data}`);
+//     // }
+//   } catch (error) {
+//     log.error("An error occurred:", error.message);
+//     process.exit(1);
+//   }
+//   const endTime = Math.floor(Date.now() / 1000);
+//   const timeTaken = endTime - startTime;
+//   console.log(`Function took ${timeTaken.toFixed(2)} seconds`);
+// }
 
 // The following sections run the tests,
 // I would suggest commenting them out one by one and running them
 
-// // Test 1, send uncompressed message and read it.
-await sendUncompressed();
-// await waitForProcessing(40);
-// await saveMessagesInBatches();
-// log.info(`Test 1 complete`);
+let testMessage = `This is a test message`;
+log.info("Test 1, send uncompressed message and read it.");
+await send(testMessage);
+await waitForProcessing(40);
+await saveMessagesInBatches("tests/test_1", "csv");
+// Check that the content of the message is correct
+{
+  let dirPath = "tests/test_1";
+  let csvFiles = [];
+  fs.readdirSync(dirPath).forEach((file) => {
+    if (file.endsWith(".csv")) {
+      csvFiles.push(file);
+    }
+  });
+  csvFiles.sort();
+  let filePath = path.join(dirPath, csvFiles[0]);
+  let fileContent = fs.readFileSync(filePath, "utf8");
+  assert.strictEqual(fileContent, testMessage);
+}
+log.info(`Test 1 complete\n`);
 
-// // Test 2 send compressed message and read it
-// await sendCompressed();
-// await waitForProcessing(40);
-// await saveMessagesInBatches();
-// log.info(`Test 2 complete`);
+log.info("Test 2 send compressed message and read it");
+await send(testMessage, true);
+await waitForProcessing(40);
+await saveMessagesInBatches("tests/test_2", "csv");
+// Check that the content of the message is correct
+// Need to investigate as compressed messages end up with double quotes around the string value.
+// {
+//   let dirPath = "tests/test_2";
+//   let csvFiles = [];
+//   fs.readdirSync(dirPath).forEach((file) => {
+//     if (file.endsWith(".csv")) {
+//       csvFiles.push(file);
+//     }
+//   });
+//   csvFiles.sort();
+//   let filePath = path.join(dirPath, csvFiles[0]);
+//   let fileContent = fs.readFileSync(filePath, "utf8");
+//   assert.strictEqual(fileContent, testMessage);
+// }
+log.info(`Test 2 complete\n`);
 
-// // Test 3 send chunked message and read it
-// await sendChunk();
-// await waitForProcessing(60);
-// await saveMessagesInBatches();
-// log.info(
-//   `md5sum for node_modules/nhs-mesh-client/tests/testdata-organizations-100000.csv is dc68ea01b30f4ef1740cb0cee80a17f0`
-// );
-// log.info(`test 3 complete`);
+log.info("Test 3 send chunked message and read it");
+await sendChunk("tests/testdata-organizations-100000.csv");
+await waitForProcessing(60);
+await saveMessagesInBatches("tests/test_3", "csv");
 
-// // Test 4 send 600 message and read them
-// await sendBulk();
-// await waitForProcessing(90);
-// await saveMessagesInBatches();
-// log.info(`test 4 complete`);
+{
+  // Get hash for original file
+  let exampleFilePath = "tests/testdata-organizations-100000.csv";
+  let exampleMd5Sum = crypto.createHash("md5");
+  fs.readFile(exampleFilePath, (err, data) => {
+    if (err) {
+      throw err;
+    }
+    exampleMd5Sum.update(data);
+    let exampleHash = exampleMd5Sum.digest("hex");
 
-// // Test 701 perform handshake against down system
+    // Get hash for downloaded file.
+    let testFilePath = "tests/test_3/";
+    let csvFiles = [];
+    fs.readdirSync(testFilePath).forEach((file) => {
+      if (file.endsWith(".csv")) {
+        csvFiles.push(file);
+      }
+    });
+    csvFiles.sort();
+    let testMd5Sum = crypto.createHash("md5");
+    fs.readFile(`${testFilePath}/${csvFiles[0]}`, (err, data) => {
+      if (err) {
+        throw err;
+      }
+      testMd5Sum.update(data);
+      let testHash = testMd5Sum.digest("hex");
+
+      // Check hashes match
+      assert.strictEqual(exampleHash, testHash);
+      log.info(
+        `md5sum for tests/testdata-organizations-100000.csv is ${exampleHash}, md5sum for test file is ${testHash}`
+      );
+    });
+  });
+}
+
+log.info(`test 3 complete\n`);
+
+log.info("Test 4 send 600 message and read them");
+await sendBulk(testMessage);
+await waitForProcessing(90);
+await saveMessagesInBatches("tests/test_4", "csv");
+{
+  fs.readdir("tests/test_4", (err, files) => {
+    if (err) {
+      throw err;
+    }
+    let csvFiles = files.filter((file) => file.endsWith(".csv"));
+    console.log(`Number of files: ${csvFiles}`);
+    assert.deepStrictEqual(csvFiles.length, 600);
+  });
+}
+log.info(`test 4 complete`);
+
+// log.info("Test 701 perform handshake against down system, expect a 404 error");
 // await sendAuthFailure();
 // log.info(`test 701 complete`);
 
-// // Test 702 send to invalid mailbox
+// log.info("Test 702 send to invalid mailbox, expect a 403 error")
 // await sendIncorrectMailbox();
 // log.info(`test 702 complete`);
 
-// // Test 703 undelivery message is handled in readMessage()
+// log.info("Test 703 undelivery message is handled in readMessage()")
 
-// // Test 704 download message that does not exist
+// log.info("Test 704 download message that does not exist")
 // await downloadMissingMessage();
 // log.info(`test 703 complete`);
 
-// // Test 705 try to download a removed message
-// await sendUncompressed();
+// log.info("Test 705 try to download a removed message")
+// await send();
 // await waitForProcessing(120);
 // await duplicateDownload();

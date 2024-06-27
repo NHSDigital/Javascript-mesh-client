@@ -7,31 +7,41 @@ runs:
     - name: Git checkout
       uses: actions/checkout@v4
 
-    - name: Git checkout mesh-sandbox
-      uses: actions/checkout@v4
-      with:
-        ref: https://github.com/NHSDigital/mesh-sandbox.git
-        path: mesh-sandbox
+    # - name: Git checkout mesh-sandbox
+    #   uses: actions/checkout@v4
+    #   with:
+    #     ref: git@github.com:NHSDigital/Javascript-mesh-client.git
+    #     path: "mesh-sandbox"
 
     - name: install mesh-sandbox container
       shell: bash
       run: |
+        mkdir -p mesh-sandbox/mailboxes
+        curl https://raw.githubusercontent.com/NHSDigital/mesh-sandbox/develop/src/mesh_sandbox/store/data/mailboxes.jsonl -o mesh-sandbox/mailboxes/mailboxes.jsonl
+
+        mkdir -p mesh-sandbox/test_plugin
+        touch mesh-sandbox/test_plugin/__init__.py
+        curl https://raw.githubusercontent.com/NHSDigital/mesh-sandbox/develop/src/mesh_sandbox/test_plugin/example_plugin.py -o mesh-sandbox/test_plugin/example_plugin.py
+        curl https://raw.githubusercontent.com/NHSDigital/mesh-sandbox/develop/src/mesh_sandbox/test_plugin/example_plugin.txt -o mesh-sandbox/test_plugin/example_plugin.txt
+
         podman run -d \
           --name mesh_sandbox \
           -p 8700:443 \
           -e SY=TestKey \
           -e SSL=yes \
-          -v ./mesh-sandbox/src/mesh_sandbox/store/data/mailboxes.jsonl:/app/mesh_sandbox/store/data/mailboxeo \
-          -v ./mesh-sandbox/src/mesh_sandbox/test_plugin:/app/mesh_sandbox/plugins:ro \
+          -v ./mesh-sandbox/mailboxes/mailboxes.jsonl:/app/mesh_sandbox/store/data/mailboxeo \
+          -v ./mesh-sandbox/test_plugin:/app/mesh_sandbox/plugins:ro \
           --health-cmd "curl -ksf https://localhost/health || exit 1" \
           --health-interval 3s \
           --health-timeout 10s \
           quay.io/andrew_cleveland-cic/mesh_sandbox
+
+        sleep 10
+        podman ps -a
       continue-on-error: true
 
     - name: run test
       shell: bash
       run: |
         npm i
-        npm test
-
+        npm run e2e
