@@ -25,4 +25,5 @@ runs:
         export SONAR_ORGANISATION_KEY=${{ inputs.sonar_organisation_key }}
         export SONAR_PROJECT_KEY=${{ inputs.sonar_project_key }}
         export SONAR_TOKEN=${{ inputs.sonar_token }}
-        ./scripts/reports/perform-static-analysis.sh true
+        export VERBOSE=true
+        ./scripts/reports/perform-static-analysis.sh
