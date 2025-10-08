@@ -5,10 +5,10 @@ runs:
   using: "composite"
   steps:
     - name: Git checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     # - name: Git checkout mesh-sandbox
-    #   uses: actions/checkout@v4
+    #   uses: actions/checkout@v5
     #   with:
     #     ref: git@github.com:NHSDigital/Javascript-mesh-client.git
     #     path: "mesh-sandbox"
